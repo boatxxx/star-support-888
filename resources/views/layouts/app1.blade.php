@@ -15,6 +15,7 @@
             background-color: #f8f9fa;
         }
 
+        /* Header */
         .header {
             position: sticky;
             top: 0;
@@ -26,14 +27,13 @@
             justify-content: space-between;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-height: 20vh; /* Header should not exceed 20% of viewport height */
-            overflow: hidden; /* Hide overflow content */
+            flex-wrap: wrap;
         }
 
+        /* User Info */
         .header .user-info {
             display: flex;
             align-items: center;
-            flex: 1;
         }
 
         .header .user-info img {
@@ -53,6 +53,7 @@
             font-size: 14px;
         }
 
+        /* Menu */
         .header .menu {
             display: flex;
             flex-direction: column;
@@ -70,7 +71,7 @@
             display: flex;
             align-items: center;
             transition: background-color 0.3s;
-            font-size: 16px; /* Default font size for desktop */
+            font-size: 16px;
         }
 
         .menu a:hover {
@@ -79,39 +80,60 @@
 
         .menu a i {
             margin-right: 8px;
-            font-size: 18px; /* Default icon size for desktop */
+            font-size: 18px;
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 align-items: flex-start;
-                padding: 10px;
-            }
-
-            .header .user-info {
-                width: 100%;
-                margin-bottom: 10px;
-                justify-content: space-between;
             }
 
             .header .menu {
+                flex-direction: row; /* เปลี่ยนทิศทางเป็นแนวนอน */
+                justify-content: space-between;
                 width: 100%;
-                align-items: flex-start;
+                margin-top: 10px;
             }
 
             .menu a {
                 padding: 10px;
-                font-size: 14px; /* Smaller font size for mobile */
+                font-size: 14px;
+                flex: 1;
+                text-align: center; /* จัดเมนูให้เป็นแนวกึ่งกลาง */
+                margin: 0; /* ลบ margin-bottom เพื่อป้องกันบัง */
+                border-radius: 0;
             }
 
             .menu a i {
-                font-size: 16px; /* Smaller icon size for mobile */
+                margin-right: 0; /* เอา margin-right ออกเพื่อให้ไอคอนอยู่กึ่งกลาง */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header .user-info img {
+                width: 60px; /* ปรับขนาดภาพให้เล็กลง */
+                height: 60px;
+            }
+
+            .menu a {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .menu a i {
+                font-size: 14px;
             }
         }
     </style>
-    @yield('head') <!-- For additional head content if needed -->
+    @yield('head')
 </head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <body>
     <div class="header">
         <div class="user-info">
@@ -122,7 +144,7 @@
             </div>
         </div>
         <div class="menu">
-            <a href="{{ url('/') }}"><i class="fas fa-home"></i> ย้อนกลับหน้าแรก</a>
+            <a href="{{ url('/user') }}"><i class="fas fa-home"></i> ย้อนกลับหน้าแรก</a>
             <a href=""><i class="fas fa-user-edit"></i> แก้ไขข้อมูลส่วนตัว</a>
             <a href=""><i class="fas fa-history"></i> ดูประวัติการขายสินค้า</a>
         </div>

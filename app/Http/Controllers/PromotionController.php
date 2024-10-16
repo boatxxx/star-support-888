@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Promotion; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
-use App\Models\Product; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
+ // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\PromotionCondition; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\PromotionDiscount; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\PromotionProduct; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง

@@ -98,13 +98,14 @@ public function review()
 {
     $user = Auth::user();
 
-    // ดึงข้อมูลออเดอร์ทั้งหมดที่เป็นของผู้ใช้ที่ล็อกอิน
+    // ดึงข้อมูลออเดอร์ทั้งหมดที่เป็นของผู้ใช้ที่ล็อกอิน (กรองด้วย user_id)
     $workRecords = WorkRecord::with(['items.product', 'shop', 'user'])
-    ->get();
-
+        ->where('user_id', $user->user_id)  // กรองเฉพาะออเดอร์ที่ user_id ตรงกับผู้ล็อกอิน
+        ->get();
 
     return view('work_records.review', compact('workRecords', 'user'));
 }
+
     public function create()
     {
         // ดึงข้อมูลสินค้า, ร้านค้า, และยูเซอร์

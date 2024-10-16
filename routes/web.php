@@ -11,15 +11,34 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\WorkRecordController;
 
+use App\Http\Controllers\QuotationController;
 
 
 use App\Http\Controllers\ShopVisitController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\SalesController;
+use App\Http\Controllers\shopVisit1;
 
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductLoadingController;
+use App\Http\Controllers\ProductReservationController;
+Route::get('/product-loading', [ProductLoadingController::class, 'index'])->name('product_loading.index');
+// เพิ่มเส้นทางอื่น ๆ ที่เกี่ยวข้องกับการขนสินค้า (เช่น create, store)
+Route::get('/product_loadings', [ProductLoadingController::class, 'index'])->name('product_loadings.index');
+Route::get('/product_loadings/search', [ProductLoadingController::class, 'search'])->name('product_loadings.search');
+
+// เส้นทางสำหรับสินค้าขึ้นรถ
+Route::get('/product-loading/create/{workRecord}', [ProductLoadingController::class, 'create'])->name('product_loading.create');
+Route::post('/product-loading/store', [ProductLoadingController::class, 'store'])->name('product_loading.store');
+Route::get('reservations', [ProductReservationController::class, 'index'])->name('reservations.index');
+
+// เส้นทางสำหรับจองสินค้า
+Route::get('product_reservation/create/{id}', [ProductReservationController::class, 'create'])->name('product_reservation.create');
+Route::post('/product-reservation/store', [ProductReservationController::class, 'store'])->name('product_reservation.store');
+
 Route::resource('returns', ReturnController::class);
 
 Route::get('reservations/create/{shop_id}', [ReservationController::class, 'create'])->name('reservations.create');
@@ -37,13 +56,30 @@ Route::get('work_records/review', [WorkRecordController::class, 'review'])->name
 Route::resource('shop_visits', ShopVisitController::class);
 Route::get('/customer-visits', [ShopVisitController::class, 'index2'])->name('customer_visits.index');
 Route::get('/shop_visits/create', [ShopVisitController::class, 'create1'])->name('shop_visits.create1');
+Route::get('/shop_visits/create1', [ShopVisitController::class, 'create'])->name('shop_visits.create');
+Route::get('/shopVisit1/createuser', [shopVisit1::class, 'createuser'])->name('shopVisit1.createuser');
+Route::get('shop-visits/111', [ShopVisitController::class, 'shopVisits333'])->name('shopVisits333');
+Route::get('sales/by-shop', [SalesController::class, 'salesByShop'])->name('sales.by_shop');
+Route::get('sales/by-employee', [SalesController::class, 'salesByEmployee'])->name('sales.by_employee');
 Route::post('/shop_visits/store', [ShopVisitController::class, 'store1'])->name('shop_visits.store1');
 Route::get('/', function () {
     return view('login');
 });
+Route::post('/sales/store', [SalesController::class, 'store'])->name('sales.store');
+Route::get('/sales/index', [SalesController::class, 'index'])->name('sales.index');
 
 // เส้นทางสำหรับฟอร์มเข้าสู่ระบบ (GET)
-Route::post('/login', [App\Http\Controllers\LoginControllers::class, 'store'])->name('login');
+// แสดงฟอร์มเข้าสู่ระบบ (GET)
+Route::get('/login', [App\Http\Controllers\LoginControllers::class, 'show'])->name('login');
+
+// ส่งข้อมูลเข้าสู่ระบบ (POST)
+Route::post('/login', [App\Http\Controllers\LoginControllers::class, 'store'])->name('login.store');
+
+// แสดงหน้าใบเสนอราคาจากออเดอร์ที่เลือก (GET)
+Route::get('/quotation/{id}', [App\Http\Controllers\QuotationController::class, 'show'])->name('quotation.show');
+
+// ส่งข้อมูลที่ผู้ใช้กรอก (POST)
+Route::post('/quotation/{id}', [App\Http\Controllers\QuotationController::class, 'store'])->name('quotation.store');
 
 // เส้นทางสำหรับการเข้าสู่ระบบ (POST)
 

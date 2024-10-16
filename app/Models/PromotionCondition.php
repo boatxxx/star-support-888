@@ -23,4 +23,5 @@ class PromotionCondition extends Model
     {
         return $this->belongsTo(Promotion::class, 'promotion_id', 'promotion_id');
     }
+
 }

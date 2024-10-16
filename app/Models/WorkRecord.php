@@ -36,6 +36,12 @@ class WorkRecord extends Model
     {
         return $this->belongsTo(Shop::class, 'shop_id');
     }
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'work_record_product', 'work_record_id', 'product_id')
+                    ->withPivot('quantity') // ถ้ามีการเก็บจำนวนสินค้าด้วย
+                    ->withTimestamps(); // ถ้าต้องการเก็บข้อมูล timestamp ในตาราง pivot
+    }
 
     // Define the relationship to User
     public function user()

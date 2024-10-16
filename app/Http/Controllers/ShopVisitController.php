@@ -12,6 +12,24 @@ use App\Models\CustomerVisit;
 
 class ShopVisitController extends Controller
 {
+
+    public function shopVisits333(Request $request)
+    {        $user = Auth::User();
+        $query = ShopVisit::with(['shop', 'employee']);
+
+        // ตรวจสอบว่ามีคำค้นหามาใน request หรือไม่
+        if ($request->has('search')) {
+            $query->whereHas('shop', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // ดึงข้อมูลทั้งหมดจากฐานข้อมูล
+        $shopVisits = $query->get();
+
+        return view('sales.shopVisits', compact('shopVisits','user'));
+    }
+
     public function index()
     {        $user = Auth::User();
         $visits = ShopVisit::with('shop', 'employee')->get();
@@ -31,13 +49,28 @@ class ShopVisitController extends Controller
         return view('shop_visits.createuser', compact('employees', 'shopVisits'));
     }
     // แสดงฟอร์มเพิ่มการเยี่ยมร้านค้า
+    public function show($id)
+{
+    $shopVisit = ShopVisit::findOrFail($id);
+    return view('shop_visits.show', compact('shopVisit'));
+}
+
     public function create()
-    {        $user = Auth::User();
+    {
+        $user = Auth::user();
         $shops = Shop::all();
         $employees = User::all();
-        return view('shop_visits.create', compact('shops', 'employees','user'));
-    }
 
+        return view('shop_visits.create', compact('shops', 'employees', 'user'));
+    }
+    public function createuser()
+    {
+        $user = Auth::user();
+        $shops = Shop::all();
+        $employees = User::all();
+
+        return view('shop_visits.create', compact('shops', 'employees', 'user'));
+    }
     // บันทึกการเยี่ยมร้านค้าใหม่
     public function store(Request $request)
     {

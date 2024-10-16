@@ -24,6 +24,14 @@ class Product extends Model
         'stock',
         'expiration_date',
     ];
-
+    public function workRecords()
+    {
+        return $this->belongsToMany(WorkRecord::class, 'work_record_product', 'product_id', 'work_record_id')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
+    public function sales() {
+        return $this->hasMany(Sale::class, 'product_id', 'id'); // เปลี่ยน `Sale` เป็นโมเดลที่คุณใช้
+    }
     // กำหนดรูปแบบวันที่ของ attribute
     protected $dates = ['expiration_date'];   }

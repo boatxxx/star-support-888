@@ -12,6 +12,7 @@
       href="assets/img/kaiadmin/favicon.ico"
       type="image/x-icon"
     />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Fonts and icons -->
     <script src="{{ asset('assets/js/plugin/webfont/webfont.min.js') }}"></script>
@@ -93,11 +94,7 @@
                         <span class="sub-item">พนักงานทั้งหมด</span>
                       </a>
                     </li>
-                    <li>
-                      <a href="components/buttons.html">
-                        <span class="sub-item">ตรวจสอบยอดขาย</span>
-                      </a>
-                    </li>
+
 
                 </div>
               </li>
@@ -122,7 +119,7 @@
                       </li>
                     <li>
                         <li>
-                            <a href="sidebar-style-2.html">
+                            <a href="{{ route('product_loading.index') }}">
                               <span class="sub-item">ประวัติการเคลื่อนย้ายสินค้า</span>
                             </a>
                           </li>
@@ -134,12 +131,12 @@
                               </li>
                               <li>
                             <li>
-                                <a href="sidebar-style-2.html">
+                                <a href="{{ route('reservations.index') }}">
                                   <span class="sub-item">ประวัติการจองสินค้า</span>
                                 </a>
                               </li>
                               <li>
-                      <a href="icon-menu.html">
+                      <a href="{{ route('sales.index') }}">
                         <span class="sub-item">ประวัติการขายสินค้า</span>
                       </a>
                     </li>
@@ -165,7 +162,7 @@
                 <div class="collapse" id="forms">
                     <ul class="nav nav-collapse">
                       <li>
-                        <a href="forms/forms.html">
+                        <a href="{{ route('shopVisits333') }}">
                           <span class="sub-item">ประวัติการเยื่ยมลูกค้า</span>
                         </a>
                       </li>
@@ -174,7 +171,7 @@
                 <div class="collapse" id="forms">
                     <ul class="nav nav-collapse">
                       <li>
-                        <a href="forms/forms.html">
+                        <a href="{{ route('shopVisit1.createuser') }}">
                           <span class="sub-item">จัดตารางเยื่ยมลูกค้า</span>
                         </a>
                       </li>
@@ -191,12 +188,12 @@
                 <div class="collapse" id="tables">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="tables/tables.html">
+                      <a href="{{ route('sales.by_shop') }}">
                         <span class="sub-item">ยอดขายแต่ล่ะร้านค้า</span>
                       </a>
                     </li>
                     <li>
-                      <a href="tables/datatables.html">
+                      <a href="{{ route('sales.by_employee') }}">
                         <span class="sub-item">ยอดขายพนักงาน</span>
                       </a>
                     </li>

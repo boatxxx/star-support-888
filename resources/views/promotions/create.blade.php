@@ -53,6 +53,9 @@
     </style>
 </head>
 <body>
+    @extends('layouts.app')
+
+@section('content')
     <div class="container">
         <h1>เพิ่มโปรโมชั่น</h1>
 
@@ -195,5 +198,6 @@
             document.getElementById('products').insertAdjacentHTML('beforeend', productHtml);
         }
     </script>
+    @endsection
 </body>
 </html>

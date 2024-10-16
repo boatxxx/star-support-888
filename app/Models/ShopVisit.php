@@ -20,8 +20,13 @@ class ShopVisit extends Model
     }
 
     // ความสัมพันธ์กับ User (พนักงาน)
-    public function employee()
-    {
-        return $this->belongsTo(User::class, 'employee_id');
-    }
+
+     // ความสัมพันธ์กับ Shop
+
+
+     // ความสัมพันธ์กับ User (พนักงาน)
+     public function employee()
+     {
+         return $this->belongsTo(User::class, 'employee_id');
+     }
 }

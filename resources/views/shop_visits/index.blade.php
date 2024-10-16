@@ -4,7 +4,7 @@
 <div class="container">
     <h1>รายการการเยี่ยมร้านค้า</h1>
 
-    <a href="{{ route('shop_visits.create') }}" class="btn btn-primary mb-3">เพิ่มการเยี่ยมร้านค้า</a>
+    <a href="{{ route('shopVisit1.createuser') }}" class="btn btn-primary mb-3">เพิ่มการเยี่ยมร้านค้า</a>
 
     @if ($visits->isEmpty())
         <p>ไม่มีข้อมูลการเยี่ยมร้านค้า</p>
