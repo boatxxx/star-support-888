@@ -109,8 +109,12 @@ option:hover {
                     <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                 @endforeach
             </select>
+            <label for="product_id1">รหัสสินค้า:</label>
+            <input type="text" id="product_id1" name="product_id1" maxlength="20">
+
             <label for="name">ชื่อสินค้า:</label>
             <input type="text" id="name" name="name" maxlength="20" required>
+
 
             <label for="description">คำอธิบายสินค้า:</label>
             <textarea id="description" name="description" maxlength="255" required></textarea>

@@ -19,6 +19,7 @@ class Sale extends Model
         'total_price',
         'sale_date',
         'user_id',
+        'quantity',
     ];
 
     // สร้างความสัมพันธ์กับโมเดล Shop

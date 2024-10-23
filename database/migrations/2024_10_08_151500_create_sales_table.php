@@ -17,6 +17,8 @@ return new class extends Migration
             $table->bigInteger('product_id')->unsigned(); // ID ของสินค้า
             $table->decimal('total_price', 10, 2); // ราคาสุทธิ
             $table->date('sale_date'); // วันที่ขาย
+            $table->integer('quantity'); // จำนวนสินค้าที่ขาย
+
             $table->bigInteger('user_id')->unsigned(); // ID ของผู้ขาย
             $table->timestamps(); // วันที่สร้างและอัปเดต
             $table->bigInteger('promotion_id')->nullable(); // Allow NULL values

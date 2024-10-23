@@ -110,6 +110,9 @@
             @endforeach
         </select>
 
+        <label for="product_id1">รหัสสินค้า:</label>
+        <input type="text" id="product_id1" name="product_id1" maxlength="20" value="{{ $product->product_id1 }}" required>
+
         <label for="name">ชื่อสินค้า:</label>
         <input type="text" id="name" name="name" maxlength="20" value="{{ $product->name }}" required>
 

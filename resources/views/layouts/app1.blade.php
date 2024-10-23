@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
     <style>
         body {
@@ -133,6 +135,8 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
 
 <body>
     <div class="header">
@@ -154,3 +158,44 @@
     </div>
 </body>
 </html>
+<script>
+    function updatePosition() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                let latitude = position.coords.latitude;
+                let longitude = position.coords.longitude;
+
+                // ส่งข้อมูลตำแหน่งไปที่เซิร์ฟเวอร์
+                fetch("{{ route('trips.updatePosition') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    },
+                    body: JSON.stringify({
+                        latitude: latitude,
+                        longitude: longitude,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.success);
+                    // เริ่มการนับใหม่หลังจากบันทึกตำแหน่งสำเร็จ
+                    setTimeout(updatePosition, 180000); // 180,000 ms = 3 นาที
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // แม้เกิดข้อผิดพลาดก็ยังคงเริ่มนับใหม่
+                    setTimeout(updatePosition, 180000); // 180,000 ms = 3 นาที
+                });
+            });
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+            // เริ่มการนับใหม่แม้ geolocation ไม่รองรับ
+            setTimeout(updatePosition, 180000); // 180,000 ms = 3 นาที
+        }
+    }
+
+    // เรียกฟังก์ชันทันทีและเริ่มการวนซ้ำ
+    updatePosition();
+</script>

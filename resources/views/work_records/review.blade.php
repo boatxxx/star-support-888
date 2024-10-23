@@ -37,7 +37,15 @@
                     <p><strong>วันที่ทำการออเดอร์:</strong> {{ $workRecord->order_date }}</p>
                     <p><strong>ร้านค้า:</strong> {{ $workRecord->shop->name }}</p>
                     <p><strong>ยูเซอร์:</strong> {{ $workRecord->user->name }}</p>
-                    <p><strong>สถานะ:</strong> {{ $workRecord->status }}</p>
+                    <p><strong>สถานะ:</strong>
+                        @if($workRecord->status === 'pending')
+                            รอดำเนินการ
+                        @elseif($workRecord->status === 'completed')
+                            เสร็จสิ้นแล้ว
+                        @else
+                            ไม่ทราบสถานะ
+                        @endif
+                    </p>
 
                     <h5 class="mt-4">สินค้าที่สั่งซื้อ</h5>
                     <table class="table table-striped table-bordered">
@@ -75,7 +83,7 @@
                                 <p>ไม่พบข้อมูลนำทาง</p>
                             @endif
 
-                            <a href="{{ route('product_loading.create', $workRecord->id) }}" class="btn btn-info mb-2">สินค้าขึ้นรถ</a>
+                            <a href="{{ route('product_loading.create', $workRecord->id) }}" class="btn btn-info mb-2">โหลดสินค้า</a>
                             <a href="{{ route('product_reservation.create', $workRecord->id) }}" class="btn btn-warning mb-2">จองสินค้า</a>
 
                             </div>

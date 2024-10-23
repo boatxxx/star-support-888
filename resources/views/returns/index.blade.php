@@ -10,6 +10,17 @@
         </div>
     @endif
 
+    <form method="GET" action="{{ route('returns.index') }}" class="mb-3">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" placeholder="ค้นหารหัสการคืนสินค้า หรือ ร้านค้า" value="{{ request('search') }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">ค้นหา</button>
+            </div>
+        </div>
+    </form>
+
     <a href="{{ route('returns.create') }}" class="btn btn-primary mb-3">เพิ่มการคืนสินค้า</a>
 
     <table class="table">
@@ -42,5 +53,7 @@
             @endforeach
         </tbody>
     </table>
+
+    {{ $returns->links() }} <!-- สำหรับการแสดงผล pagination -->
 </div>
 @endsection

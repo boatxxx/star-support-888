@@ -11,6 +11,7 @@
 
     @include('layouts.app1')
     <div class="menu">
+        <a href="{{ route('product_loadings.viewCart') }}"><i class="fas fa-shopping-cart"></i> ตระกร้าสินค้า</a>
         <a href="{{ route('work_records.review') }}"><i class="fas fa-box"></i> ตรวจสอบออเดอร์</a>
         <a href="{{ route('customer_visits.index') }}"><i class="fas fa-user-check"></i> ตรวจเยี่ยมลูกค้า</a>
         <a href="{{ route('shops.create') }}"><i class="fas fa-store"></i> สำรวจร้านค้า และแผนที่</a>

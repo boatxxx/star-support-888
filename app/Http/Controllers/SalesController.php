@@ -6,10 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Auth;
+use PDF;
+use App\Models\Shop;
+use App\Models\User;
+use App\Models\WorkRecord;
+
+
 
 class SalesController extends Controller
 {
+    public function destroy($id)
+    {
+        $sale = Sale::findOrFail($id);
+        $sale->delete();
 
+        return redirect()->route('sales.index')->with('success', 'ลบประวัติการขายเรียบร้อยแล้ว');
+    }
     public function salesByShop(Request $request)
     { $user = Auth::user();
         $salesQuery = Sale::with(['shop', 'user']);
@@ -62,6 +74,13 @@ class SalesController extends Controller
 }
     public function store(Request $request)
     {
+        $workRecordId = $request->input('work_record_id'); // รับ ID ของ WorkRecord
+        $workRecord = WorkRecord::findOrFail($workRecordId);
+
+        // ถ้าไม่มีค่าใน work_record_id ให้แสดงข้อผิดพลาด
+        if (!$workRecordId) {
+            return redirect()->back()->withErrors(['error' => 'ไม่พบ ID ของ WorkRecord']);
+        }
         $request->validate([
             'items' => 'required|json',
             'shop_id' => 'required|exists:shops,shop_id', // ตรวจสอบว่ามี shop_id ที่ถูกต้อง
@@ -81,6 +100,7 @@ class SalesController extends Controller
             // สร้างข้อมูลการขายในฐานข้อมูล
             Sale::create([
                 'shop_id' => $request->input('shop_id'), // คุณสามารถเปลี่ยนเป็น ID ของร้านค้าที่ต้องการ
+                'quantity' => $item['quantity'], // เพิ่มจำนวนที่ขาย
                 'product_id' => $item['product_id'],
                 'total_price' => $itemTotal,
                 'sale_date' => now(),  // วันที่ขาย
@@ -88,8 +108,47 @@ class SalesController extends Controller
                 'promotion_id' => 12,
             ]);
         }
-
+        $workRecord->status = 'completed';
+        $workRecord->save();
         // ส่งข้อมูลกลับไปยังหน้าแรก
         return redirect('user');
     }
+    public function exportPdf(Request $request)
+{
+    $sales = Sale::whereBetween('sale_date', [$request->start_date, $request->end_date])
+                  ->where('shop_id', $request->shop_id)
+                  ->where('user_id', $request->employee_id)
+                  ->get();
+
+    $commission = $request->commission;
+
+    $pdf = PDF::loadView('sales.pdf_summary', compact('sales', 'commission'));
+    return $pdf->download('sales_summary.pdf');
+        return $pdf->download('sales_summary.pdf');
+}
+public function summary(Request $request)
+{ $user = Auth::user();
+    // รับข้อมูลจากฟอร์ม
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
+    $shopId = $request->input('shop_id');
+    $employeeId = $request->input('employee_id');
+    $commission = $request->input('commission', 5);
+  // ดึงข้อมูลร้านค้าและพนักงาน
+  $shops = Shop::all(); // ดึงข้อมูลร้านค้าทั้งหมด
+  $employees = User::all();
+  // คิวรีข้อมูลจากฐานข้อมูลตามเงื่อนไข
+    $sales = Sale::whereBetween('sale_date', [$startDate, $endDate])
+                    ->when($shopId, function ($query, $shopId) {
+                        return $query->where('shop_id', $shopId);
+                    })
+                    ->when($employeeId, function ($query, $employeeId) {
+                        return $query->where('user_id', $employeeId);
+                    })
+                    ->get();
+
+    // ส่งข้อมูลไปยังวิว
+    return view('sales.summary', compact('sales', 'commission','shops','employees','user'));
+}
+
 }

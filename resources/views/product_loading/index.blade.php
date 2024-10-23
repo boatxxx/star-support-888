@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>ประวัติการขนสินค้า</h1>
+    <h1>ประวัติการขนสินค้าขึ้นตระก้า</h1>
 
     <form action="{{ route('product_loadings.search') }}" method="GET">
         <div class="form-group">
@@ -20,6 +20,8 @@
                 <th>ออเดอร์</th>
                 <th>จำนวน</th>
                 <th>ผู้ขนย้าย</th>
+                <th>เมนู</th>
+
             </tr>
         </thead>
         <tbody>
@@ -35,7 +37,13 @@
                         <td>{{ $productLoading->workRecord->id ?? 'ไม่พบออเดอร์' }}</td>
                         <td>{{ $productLoading->quantity }}</td>
                         <td>{{ $productLoading->user->name ?? 'ไม่พบผู้สร้าง' }}</td> <!-- แสดงชื่อผู้สร้าง -->
-
+                        <td>
+                            <form action="{{ route('product_loadings.destroy', $productLoading->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสินค้านี้?');">ลบ</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             @endif

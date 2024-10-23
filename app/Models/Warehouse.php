@@ -9,4 +9,8 @@ class Warehouse extends Model
 {
     use HasFactory;
     protected $fillable = ['name', 'location', 'capacity'];
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
 }

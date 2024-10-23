@@ -13,9 +13,11 @@ use App\Models\Promotion; // ตรวจสอบการใช้ชื่อ
 use App\Models\PromotionCondition; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\PromotionDiscount; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\PromotionProduct; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
+use App\Models\Sale; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 
 use App\Models\WorkRecord; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\WorkRecordItem; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
+use App\Models\WorkRecordProduct; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 
 class QuotationController extends Controller
 {
@@ -45,9 +47,48 @@ class QuotationController extends Controller
 
         // ดึงข้อมูลสินค้าที่เกี่ยวข้องเท่านั้น
         $products = Product::whereIn('product_id', $productIds)->get()->keyBy('product_id');
+        $userId = Auth::id(); // ID ของผู้ใช้งาน
 
         // เริ่มต้นยอดรวม
         $total = 0;
+
+        // ดึงรายการสินค้าในตะกร้า
+        $cartItems = WorkRecordProduct::where('created_by', $userId)
+        ->where('is_hidden', false) // เพิ่มเงื่อนไขเพื่อกรองเฉพาะสินค้าที่ยังไม่ถูกซ่อน
+        ->select('product_id', DB::raw('SUM(quantity) as total_quantity')) // รวมยอดจำนวนสินค้า
+        ->groupBy('product_id') // จัดกลุ่มตาม product_id
+        ->get()
+        ->keyBy('product_id'); // แปลงผลลัพธ์เป็น key-value pair โดยใช้ 'product_id' เป็น key
+
+
+        // เช็คว่ามีสินค้าหรือไม่ และจำนวนเพียงพอหรือไม่
+        foreach ($items as $item) {
+            $productId = $item['product_id'];
+            $requestedQuantity = $item['quantity'];
+
+            // เช็คว่าในตะกร้ามีสินค้านี้หรือไม่
+            if ($cartItems->has($productId)) {
+                // หากมีสินค้าในตะกร้า
+                $cartQuantity = $cartItems[$productId]->total_quantity; // ใช้ total_quantity ที่รวมมาแล้ว
+
+                // ดึงยอดขายที่มีอยู่แล้ว
+                $soldQuantity = Sale::where('product_id', $productId)
+                                    ->where('user_id', $userId)
+                                    ->sum('quantity');
+
+                // คำนวณจำนวนที่สามารถขายได้
+                $availableQuantity = $cartQuantity - $soldQuantity;
+
+                // ตรวจสอบจำนวน
+                if ($requestedQuantity > $availableQuantity) {
+                    // จำนวนไม่เพียงพอ
+                    return redirect()->back()->withErrors(["$productId: จำนวนสินค้าในตะกร้าไม่เพียงพอ"]);
+                }
+            } else {
+                // ไม่มีสินค้านี้ในตะกร้า
+                return redirect()->back()->withErrors(["$productId: สินค้าไม่มีในตะกร้า"]);
+            }
+        }
 
         // ตรวจสอบว่ามีการเลือกโปรโมชั่นหรือไม่
         if ($selectedPromotionId) {
@@ -89,9 +130,13 @@ class QuotationController extends Controller
             }
         }
 
+        // สร้างรายการขาย
+
+
         // ส่งข้อมูลไปยังหน้าใบเสนอราคา
-        return view('quotation.summary', compact('items', 'total', 'products', 'user','workRecord'));
+        return view('quotation.summary', compact('items', 'total', 'products', 'user', 'workRecord'));
     }
+
 
 
 

@@ -38,6 +38,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
@@ -120,11 +121,15 @@
                     <li>
                         <li>
                             <a href="{{ route('product_loading.index') }}">
-                              <span class="sub-item">ประวัติการเคลื่อนย้ายสินค้า</span>
+                              <span class="sub-item">ประวัติการโหลดสินค้าขึ้นรถ</span>
                             </a>
                           </li>
-                          <li>
-                            <li>
+                          <li><li>
+                            <a href="{{ route('inventory_loads.index') }}">
+                                <span class="sub-item">ประวัติโหลดสินค้ากลับคลัง</span>
+                            </a>
+                        </li>
+                        <li>
                                 <a href="{{ route('returns.index') }}">
                                   <span class="sub-item">ประวัติการคืนสินค้า</span>
                                 </a>
@@ -209,7 +214,7 @@
                 <div class="collapse" id="maps">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="maps/googlemaps.html">
+                      <a href="{{ route('work_histories.map') }}">
                         <span class="sub-item">ประวัติการเดินทาง</span>
                       </a>
                     </li>
@@ -246,7 +251,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="widgets.html">
+                <a href="{{ route('sales.summary') }}">
                   <i class="fas fa-desktop"></i>
                   <p>ยอดขาย</p>
                   <span class="badge badge-success">4</span>
@@ -267,7 +272,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../../documentation/index.html">
+                <a href="{{ route('returns.index') }}">
                   <i class="fas fa-file"></i>
                   <p>การคืนสินค้า</p>
                   <span class="badge badge-secondary">1</span>
@@ -731,6 +736,8 @@
     <!-- jQuery Vector Maps -->
     <script src="{{ asset('assets/js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugin/jsvectormap/world.js') }}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <!-- Sweet Alert -->
     <script src="{{ asset('assets/js/plugin/sweetalert/sweetalert.min.js') }}"></script>

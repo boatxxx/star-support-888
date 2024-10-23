@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Product; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\Warehouse;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\Sale;
 
 class ProductController extends Controller
 {
@@ -47,6 +50,11 @@ public function edit($id)
 
 public function store(Request $request)
 {
+
+    $request->validate([
+        'product_id1' => 'required|max:20',
+        // เพิ่มกฎสำหรับฟิลด์อื่น ๆ ที่ต้องการ
+    ]);
     // Validate and store the product
     $validatedData = $request->validate([
         'name' => 'required|max:20',
@@ -55,6 +63,8 @@ public function store(Request $request)
         'stock' => 'required|integer',
         'expiration_date' => 'required|date',
         'Warehouse' => 'required|integer',
+        'product_id1' => 'nullable|string|max:255', // เพิ่มการ validate สำหรับ product_id1
+
     ]);
 
     Product::create($validatedData);
@@ -72,6 +82,7 @@ public function update(Request $request, $id)
         'stock' => 'required|integer',
         'expiration_date' => 'required|date',
         'Warehouse' => 'required|integer',
+        'product_id1' => 'nullable|string|max:255', // เพิ่มการ validate สำหรับ product_id1
     ]);
 
     // ดึงข้อมูลสินค้าที่ต้องการอัปเดต
@@ -90,10 +101,22 @@ public function show(Product $product)
     return view('Product.show', compact('product','user'));
 }
 public function index()
-{    $user = Auth::User();
+{
+    $user = Auth::user();
 
-    $products = Product::all(); // ผลลัพธ์คือ Collection
-    return view('Product.index', compact('products','user'));
-}
+    // ดึงข้อมูลสินค้าทั้งหมด
+    $products = Product::all();
+
+    // ดึงข้อมูลยอดขาย
+    $sales = Sale::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+                 ->groupBy('product_id')
+                 ->get();
+
+    // ดึงข้อมูลที่อยู่ในคลังสินค้า
+    $productMovements = Warehouse::with('warehouse') // เชื่อมโยงกับโมเดล Warehouse
+        ->get();
+
+    return view('Product.index', compact('products', 'user', 'sales', 'productMovements'));
 }
 
+}

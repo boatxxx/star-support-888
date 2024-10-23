@@ -23,6 +23,7 @@ class Product extends Model
         'price',
         'stock',
         'expiration_date',
+        'product_id1',
     ];
     public function workRecords()
     {

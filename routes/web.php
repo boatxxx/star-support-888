@@ -19,21 +19,33 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\shopVisit1;
 
+use App\Http\Controllers\TripsController;
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductLoadingController;
 use App\Http\Controllers\ProductReservationController;
+use App\Http\Controllers\InventoryLoadController;
+Route::delete('/sales/{id}', [SalesController::class, 'destroy'])->name('sales.destroy');
+
+Route::delete('/inventory-loads/{id}', [InventoryLoadController::class, 'destroy'])->name('inventory-loads.destroy');
+Route::post('/update-position', [TripsController::class, 'updatePosition'])->name('trips.updatePosition');
+Route::get('/map', [TripsController::class, 'showMap'])->name('work_histories.map');
+
 Route::get('/product-loading', [ProductLoadingController::class, 'index'])->name('product_loading.index');
 // เพิ่มเส้นทางอื่น ๆ ที่เกี่ยวข้องกับการขนสินค้า (เช่น create, store)
 Route::get('/product_loadings', [ProductLoadingController::class, 'index'])->name('product_loadings.index');
 Route::get('/product_loadings/search', [ProductLoadingController::class, 'search'])->name('product_loadings.search');
+Route::get('/inventory-load-history', [InventoryLoadController::class, 'index'])->name('inventory_loads.index');
 
 // เส้นทางสำหรับสินค้าขึ้นรถ
 Route::get('/product-loading/create/{workRecord}', [ProductLoadingController::class, 'create'])->name('product_loading.create');
 Route::post('/product-loading/store', [ProductLoadingController::class, 'store'])->name('product_loading.store');
 Route::get('reservations', [ProductReservationController::class, 'index'])->name('reservations.index');
+Route::get('/product_loadings/cart', [ProductLoadingController::class, 'viewCart'])->name('product_loadings.viewCart');
+Route::post('/load-back/{productId}', [ProductLoadingController::class, 'loadBackToWarehouse'])->name('loadBackToWarehouse');
+Route::delete('/product_loadings/{id}', [ProductLoadingController::class, 'destroy'])->name('product_loadings.destroy');
 
 // เส้นทางสำหรับจองสินค้า
 Route::get('product_reservation/create/{id}', [ProductReservationController::class, 'create'])->name('product_reservation.create');
@@ -71,6 +83,8 @@ Route::get('/sales/index', [SalesController::class, 'index'])->name('sales.index
 // เส้นทางสำหรับฟอร์มเข้าสู่ระบบ (GET)
 // แสดงฟอร์มเข้าสู่ระบบ (GET)
 Route::get('/login', [App\Http\Controllers\LoginControllers::class, 'show'])->name('login');
+Route::get('/sales/export-pdf', [SalesController::class, 'exportPdf'])->name('sales.export_pdf');
+Route::get('/sales/summary', [SalesController::class, 'summary'])->name('sales.summary');
 
 // ส่งข้อมูลเข้าสู่ระบบ (POST)
 Route::post('/login', [App\Http\Controllers\LoginControllers::class, 'store'])->name('login.store');

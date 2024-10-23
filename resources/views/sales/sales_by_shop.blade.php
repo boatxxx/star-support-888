@@ -3,6 +3,7 @@
 @section('content')
 <div class="container">
     <h1>ยอดขายตามร้านค้า</h1>
+    <canvas id="salesChart" width="400" height="200"></canvas>
 
     <form method="GET" action="{{ route('sales.by_shop') }}">
         <div class="form-group">

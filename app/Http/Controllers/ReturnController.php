@@ -13,10 +13,19 @@ use Illuminate\Http\Request;
 
 class ReturnController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {    $user = Auth::user();
+                $search = $request->input('search');
 
-        $returns = Return1::with('user', 'shop')->get();
+        $returns = Return1::with('shop') // ตรวจสอบว่า `shop` มีอยู่ในความสัมพันธ์
+            ->when($search, function ($query, $search) {
+                return $query->where('id', 'LIKE', "%{$search}%")
+                             ->orWhereHas('shop', function($q) use ($search) {
+                                 $q->where('name', 'LIKE', "%{$search}%");
+                             });
+            })
+            ->paginate(10); // หรือเปลี่ยนจำนวนแสดงผลตามต้องการ
+
         return view('returns.index', compact('returns','user'));
     }
     public function create()

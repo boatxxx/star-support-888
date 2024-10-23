@@ -36,6 +36,7 @@
 
     <form action="{{ route('sales.store') }}" method="POST">
         @csrf
+        <input type="hidden" name="work_record_id" value="{{ $workRecord->id }}"> <!-- ส่ง ID ของ WorkRecord -->
         <input type="hidden" name="shop_id" value="{{ $workRecord->shop->shop_id }}"> <!-- เพิ่ม shop_id -->
         <input type="hidden" name="items" value="{{ json_encode($items) }}">
         <div class="mt-4">
