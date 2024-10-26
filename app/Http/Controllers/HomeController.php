@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\Sale; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
+use App\Models\WorkRecord; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 
 use App\Models\Shop; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 
@@ -64,7 +65,9 @@ class HomeController extends Controller
 
     public function index1()
     {
+        $completedOrders = WorkRecord::where('status', 'completed')->count();
+        $pendingOrders = WorkRecord::where('status', 'pending')->count();
         $user = Auth::user();
-        return view('user', compact('user'));
+        return view('user', compact('user','completedOrders', 'pendingOrders'));
     }
 }
