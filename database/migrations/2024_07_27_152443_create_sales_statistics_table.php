@@ -17,6 +17,8 @@ return new class extends Migration
             $table->decimal('total_sales', 8, 2);
             $table->decimal('total_returns', 8, 2);
             $table->timestamps();
+            $table->boolean('paymentCheck')->default(false); // ตั้งค่าเริ่มต้นเป็น false
+
 
         });
     }

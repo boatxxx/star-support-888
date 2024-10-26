@@ -28,6 +28,7 @@ use App\Http\Controllers\ProductLoadingController;
 use App\Http\Controllers\ProductReservationController;
 use App\Http\Controllers\InventoryLoadController;
 Route::delete('/sales/{id}', [SalesController::class, 'destroy'])->name('sales.destroy');
+Route::post('/sales/{sale_id}/confirmPayment', [SalesController::class, 'confirmPayment'])->name('sales.confirmPayment');
 
 Route::delete('/inventory-loads/{id}', [InventoryLoadController::class, 'destroy'])->name('inventory-loads.destroy');
 Route::post('/update-position', [TripsController::class, 'updatePosition'])->name('trips.updatePosition');

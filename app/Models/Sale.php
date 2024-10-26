@@ -20,6 +20,7 @@ class Sale extends Model
         'sale_date',
         'user_id',
         'quantity',
+        'paymentCheck'
     ];
 
     // สร้างความสัมพันธ์กับโมเดล Shop

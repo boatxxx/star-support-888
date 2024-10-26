@@ -55,7 +55,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="commission">เปอร์เซ็นต์คอมมิชชั่น (%)</label>
-                    <input type="number" name="commission" class="form-control" min="0" max="100" value="5" required>
+                    <input type="number" name="commission" class="form-control" min="0" max="100" value="0" required>
                 </div>
             </div>
         </div>
@@ -68,7 +68,7 @@
     </form>
 
     <!-- ตารางแสดงผลสรุปยอดขาย -->
-    @if (isset($sales))
+    @if (isset($sales) && count($sales) > 0)
     <h2>สรุปยอดขาย</h2>
     <table class="table table-bordered">
         <thead>
@@ -80,6 +80,7 @@
                 <th>ยอดคอมมิชชั่น (บาท)</th>
                 <th>ยอดสุทธิ (บาท)</th>
                 <th>วันที่ขาย</th>
+                <th>การดำเนินการ</th>
             </tr>
         </thead>
         <tbody>
@@ -102,6 +103,16 @@
                 <td>{{ number_format($commissionAmount, 2) }}</td>
                 <td>{{ number_format($netTotal, 2) }}</td>
                 <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('d/m/Y') }}</td>
+                <td>
+                    @if (!$sale->paymentCheck) <!-- ตรวจสอบว่ายังไม่มีการเช็ครับยอดเงิน -->
+                        <form action="{{ route('sales.confirmPayment', $sale->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success">เช็ครับเงิน</button>
+                        </form>
+                    @else
+                        <span class="text-success">เช็ครับแล้ว</span>
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
@@ -116,6 +127,8 @@
             </tr>
         </tfoot>
     </table>
+    @else
+    <p>ไม่พบข้อมูลยอดขายตามเงื่อนไขที่เลือก</p>
     @endif
 </div>
 @endsection

@@ -10,11 +10,31 @@ use PDF;
 use App\Models\Shop;
 use App\Models\User;
 use App\Models\WorkRecord;
+use App\Models\PaymentCheck;
 
 
 
 class SalesController extends Controller
 {
+
+    public function confirmPayment(Request $request, $sale_id)
+{
+    $sale = Sale::find($sale_id);
+
+    if (!$sale) {
+        return redirect()->back()->with('error', 'ไม่พบยอดขายที่ต้องการเช็ครับเงิน');
+    }
+
+    $paymentCheck = new PaymentCheck();
+    $paymentCheck->sale_id = $sale->id;
+    $paymentCheck->received_by = Auth::user()->user_id; // ดึง ID ของผู้ล็อกอิน
+    $paymentCheck->received_amount = $sale->total_price;
+    $paymentCheck->received_date = now();
+    $paymentCheck->save();
+    $sale->paymentCheck = 1; // หรือ true
+    $sale->save(); // บันทึกการเปลี่ยนแปลง
+    return redirect()->route('sales.summary')->with('success', 'บันทึกการเช็ครับเงินเรียบร้อยแล้ว');
+}
     public function destroy($id)
     {
         $sale = Sale::findOrFail($id);
@@ -127,18 +147,24 @@ class SalesController extends Controller
         return $pdf->download('sales_summary.pdf');
 }
 public function summary(Request $request)
-{ $user = Auth::user();
+{
+    $user = Auth::user();
+
     // รับข้อมูลจากฟอร์ม
     $startDate = $request->input('start_date');
     $endDate = $request->input('end_date');
     $shopId = $request->input('shop_id');
     $employeeId = $request->input('employee_id');
-    $commission = $request->input('commission', 5);
-  // ดึงข้อมูลร้านค้าและพนักงาน
-  $shops = Shop::all(); // ดึงข้อมูลร้านค้าทั้งหมด
-  $employees = User::all();
-  // คิวรีข้อมูลจากฐานข้อมูลตามเงื่อนไข
-    $sales = Sale::whereBetween('sale_date', [$startDate, $endDate])
+    $commission = $request->input('commission', 0);
+
+    // ดึงข้อมูลร้านค้าและพนักงาน
+    $shops = Shop::all();
+    $employees = User::all();
+
+    // คิวรีข้อมูลจากฐานข้อมูลตามเงื่อนไข
+    $sales = Sale::when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                        return $query->whereBetween('sale_date', [$startDate, $endDate]);
+                    })
                     ->when($shopId, function ($query, $shopId) {
                         return $query->where('shop_id', $shopId);
                     })
@@ -147,8 +173,11 @@ public function summary(Request $request)
                     })
                     ->get();
 
+    // ตรวจสอบว่ามีการเช็ครับยอดเงินหรือไม่ (เพิ่มเงื่อนไขตามที่ต้องการ)
+    $hasCheckedPayments = $sales->isNotEmpty(); // สมมุติว่าเช็ครับยอดเงินถ้ามียอดขาย
+
     // ส่งข้อมูลไปยังวิว
-    return view('sales.summary', compact('sales', 'commission','shops','employees','user'));
+    return view('sales.summary', compact('sales', 'commission', 'shops', 'employees', 'user', 'hasCheckedPayments'));
 }
 
 }

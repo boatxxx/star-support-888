@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('total_price', 10, 2); // ราคาสุทธิ
             $table->date('sale_date'); // วันที่ขาย
             $table->integer('quantity'); // จำนวนสินค้าที่ขาย
-
+            $table->boolean('paymentCheck')->default(false); // ตั้งค่าเริ่มต้นเป็น false
             $table->bigInteger('user_id')->unsigned(); // ID ของผู้ขาย
             $table->timestamps(); // วันที่สร้างและอัปเดต
             $table->bigInteger('promotion_id')->nullable(); // Allow NULL values
