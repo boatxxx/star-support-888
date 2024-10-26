@@ -44,5 +44,9 @@ class Sale extends Model
     {
         return $this->hasMany(SaleItem::class);
     }
+    public function paymentChecks()
+    {
+        return $this->hasMany(PaymentCheck::class, 'sale_id');
+    }
 }
 

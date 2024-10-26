@@ -46,5 +46,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function paymentChecks()
+    {
+        return $this->hasMany(PaymentCheck::class, 'received_by', 'user_id'); // received_by เป็น foreign key ที่อ้างอิงถึง user_id
+    }
 
 }

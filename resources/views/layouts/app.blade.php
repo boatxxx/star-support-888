@@ -258,6 +258,13 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="{{ route('payment_checks.index') }}">
+                  <i class="fas fa-desktop"></i>
+                  <p>เช็คประวัติยอดรับเงิน</p>
+                  <span class="badge badge-success">4</span>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="widgets.html">
                   <i class="fas fa-desktop"></i>
                   <p>ระบบแจ้งเตือนไลน์</p>

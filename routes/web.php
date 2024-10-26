@@ -20,6 +20,7 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\shopVisit1;
 
 use App\Http\Controllers\TripsController;
+use App\Http\Controllers\PaymentCheckController;
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ReturnController;
@@ -33,6 +34,7 @@ Route::post('/sales/{sale_id}/confirmPayment', [SalesController::class, 'confirm
 Route::delete('/inventory-loads/{id}', [InventoryLoadController::class, 'destroy'])->name('inventory-loads.destroy');
 Route::post('/update-position', [TripsController::class, 'updatePosition'])->name('trips.updatePosition');
 Route::get('/map', [TripsController::class, 'showMap'])->name('work_histories.map');
+Route::get('/payment-checks', [PaymentCheckController::class, 'index'])->name('payment_checks.index');
 
 Route::get('/product-loading', [ProductLoadingController::class, 'index'])->name('product_loading.index');
 // เพิ่มเส้นทางอื่น ๆ ที่เกี่ยวข้องกับการขนสินค้า (เช่น create, store)

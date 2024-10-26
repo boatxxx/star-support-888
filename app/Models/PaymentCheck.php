@@ -21,4 +21,16 @@ class PaymentCheck extends Model
         'updated_at',
 
     ];
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class, 'sale_id'); // assuming Sale model exists
+    }
+    public function paymentChecks()
+    {
+        return $this->hasMany(PaymentCheck::class, 'received_by', 'user_id'); // received_by เป็น foreign key ที่อ้างอิงถึง user_id
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'received_by', 'user_id'); // received_by เป็น foreign key ที่อ้างอิงถึง user_id
+    }
 }
