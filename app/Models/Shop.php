@@ -13,9 +13,15 @@ class Shop extends Model
     protected $fillable = [
         'name',
         'address',
+        'district',
         'Link_google',
         'sta',
         'Latitude',
         'Longitude'
     ];
+    public function shopVisits()
+    {
+        return $this->hasMany(ShopVisit::class, 'shop_id'); // ความสัมพันธ์แบบ One-to-Many
+    }
+
 }

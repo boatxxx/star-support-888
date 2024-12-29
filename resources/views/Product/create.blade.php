@@ -109,6 +109,18 @@ option:hover {
                     <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                 @endforeach
             </select>
+            <div class="form-group">
+                <label for="category_id">หมวดหมู่</label>
+                <select name="category_id" id="category_id" class="form-control">
+                    <option value="">-- เลือกหมวดหมู่ --</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <label for="product_id1">รหัสสินค้า:</label>
             <input type="text" id="product_id1" name="product_id1" maxlength="20">
 

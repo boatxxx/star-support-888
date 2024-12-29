@@ -2,6 +2,12 @@
 
 @section('content')
 <div class="container">
+    @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
     <!-- Navigation Menu -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <a class="navbar-brand" href="{{ route('user') }}">หน้าหลัก</a>
@@ -55,15 +61,40 @@
                                 <td>{{ $visit->notes }}</td>
                                 <td>{{ $visit->created_at }}</td>
                                 <td>
-                                    <a href="" class="btn btn-secondary" target="_blank">
-                                        นำทาง
-                                    </a>
+                                    <!-- เมนูการนำทาง -->
+                                    @if($visit->shop->sta == 1 && $visit->shop->link_google)
+                                        <!-- นำทางด้วยลิงก์ที่บันทึกไว้ -->
+                                        <a href="{{ $visit->shop->link_google }}" class="btn btn-success" target="_blank">นำทางลิ้ง</a>
+                                    @elseif($visit->shop->sta == 0 && $visit->shop->latitude && $visit->shop->longitude)
+                                        <!-- นำทางด้วยพิกัด -->
+                                        <a href="https://www.google.com/maps?q={{ $visit->shop->latitude }},{{ $visit->shop->longitude }}" class="btn btn-secondary" target="_blank">นำทางตำแหน่ง</a>
+                                    @else
+                                        <span>ไม่มีข้อมูลนำทาง</span>
+                                    @endif
                                 </td>
+
                                 <td>
+                                    <!-- ปุ่มสำหรับการบันทึกการเยี่ยมร้าน -->
                                     <a href="{{ route('shop_visits.create1', ['shop_id' => $visit->shop_id]) }}" class="btn btn-primary">
                                         บันทึกการเยี่ยม
                                     </a>
                                 </td>
+
+                                <td>
+                                    <!-- ปุ่มสำหรับการโหลดสินค้า -->
+                                    <a href="{{ route('product.load1', ['shop_id' => $visit->shop_id]) }}" class="btn btn-info mb-2">โหลดสินค้า</a>
+                                    <!-- ปุ่มสำหรับการจองสินค้า -->
+                                    <a href="{{ route('product_reservation.create1', ['shopId' => $visit->shop_id]) }}" class="btn btn-warning mb-2">จองสินค้า</a>
+                                    <!-- ปุ่มสำหรับการสร้างใบเสนอราคา -->
+                                  <!-- ปุ่มสำหรับการสร้างใบเสนอราคา -->
+                                  <a href="{{ route('quotation.create1', ['shopId' => $visit->shop_id]) }}" class="btn btn-primary">ไปยังใบเสนอราคา</a>
+
+
+
+                                                                    </td>
+
+
+
                             </tr>
                         @endforeach
                     </tbody>

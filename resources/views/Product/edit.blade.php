@@ -99,7 +99,17 @@
     <form action="{{ route('products.update', $product->product_id) }}" method="POST">
         @csrf
         @method('PUT')
-
+        <div class="form-group">
+            <label for="category_id">หมวดหมู่</label>
+            <select name="category_id" id="category_id" class="form-control">
+                <option value="">-- เลือกหมวดหมู่ --</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         <label for="Warehouse">คลังสินค้า:</label>
         <select id="Warehouse" name="Warehouse" required>
             <option value="" disabled>เลือกคลังสินค้า</option>

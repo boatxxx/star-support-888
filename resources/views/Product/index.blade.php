@@ -93,6 +93,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>หมวดหมู่สินค้า</th>
                     <th>รหัสสินค้า</th>
                     <th>ชื่อสินค้า</th>
                     <th>คำอธิบายสินค้า</th>
@@ -110,6 +111,7 @@
                         $totalSold = optional($sales->where('product_id', $product->product_id)->first())->total_sold ?? 0;
                     @endphp
                     <tr>
+                        <td>{{ $product->category->name ?? 'ไม่มีหมวดหมู่' }}</td>
                         <td>{{ $product->product_id1 }}</td>
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->description }}</td>

@@ -20,7 +20,11 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
             $table->integer('stock');
             $table->date('expiration_date');
+            $table->unsignedBigInteger('category_id'); // เพิ่มฟิลด์ category_id
             $table->timestamps();
+
+            // กำหนดความสัมพันธ์กับตาราง categories
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

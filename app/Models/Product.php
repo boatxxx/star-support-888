@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
 
 class Product extends Model
 {// กำหนด primary key ถ้าจำเป็น
@@ -24,6 +25,7 @@ class Product extends Model
         'stock',
         'expiration_date',
         'product_id1',
+        'category_id',
     ];
     public function workRecords()
     {
@@ -35,4 +37,12 @@ class Product extends Model
         return $this->hasMany(Sale::class, 'product_id', 'id'); // เปลี่ยน `Sale` เป็นโมเดลที่คุณใช้
     }
     // กำหนดรูปแบบวันที่ของ attribute
-    protected $dates = ['expiration_date'];   }
+    protected $dates = ['expiration_date'];
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+
+
+}

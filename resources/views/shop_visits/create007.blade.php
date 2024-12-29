@@ -1,4 +1,4 @@
-@extends($user->role_id == 1 ? 'layouts.app' : 'layouts.app1')
+@extends('layouts.app1')
 
 @section('content')
 <div class="container">

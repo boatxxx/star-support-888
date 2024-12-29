@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
+use App\Models\Shop; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 
 use App\Models\WorkRecord; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 
@@ -18,9 +19,24 @@ class ProductReservationController extends Controller
 
         // ดึงข้อมูล WorkRecord และ shop ที่เกี่ยวข้อง
         $workRecord = WorkRecord::with('shop')->findOrFail($workRecordId); // ใช้ $workRecordId แทน $id
+        $shops = Shop::all(); // ดึงข้อมูลร้านค้าทั้งหมด
 
-        return view('product_reservation.create', compact('products', 'user', 'workRecord')); // ส่งข้อมูลไปยัง view
+        return view('product_reservation.create', compact('products', 'user', 'workRecord', 'shops')); // ส่งข้อมูลไปยัง view
     }
+
+    public function create1($shopId) // รับค่า shopId จาก URL
+    {
+        $user = Auth::user(); // ดึงข้อมูลผู้ใช้งานที่ล็อกอินอยู่
+        $products = Product::all(); // ดึงสินค้าทั้งหมด
+        // ใช้เพื่อดีบั๊กและตรวจสอบค่าที่ส่งมา
+
+        // ดึงข้อมูลร้านค้าที่เกี่ยวข้องกับ shopId
+        $shop = Shop::where('shop_id', $shopId)->firstOrFail();
+        $shops = Shop::all(); // ดึงข้อมูลร้านค้าทั้งหมด
+
+        return view('product_reservation.create', compact('products', 'user', 'shop', 'shops')); // ส่งข้อมูลไปยัง view
+    }
+
  public function index(Request $request)
  {
     $user = Auth::user(); // ดึงข้อมูลผู้ใช้งานที่ล็อกอินอยู่

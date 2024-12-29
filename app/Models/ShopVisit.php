@@ -16,7 +16,7 @@ class ShopVisit extends Model
     ];
     public function shop()
     {
-        return $this->belongsTo(Shop::class, 'shop_id');
+        return $this->belongsTo(Shop::class, 'shop_id'); // shop_id เป็น foreign key ที่เชื่อมโยงกับตาราง Shop
     }
 
     // ความสัมพันธ์กับ User (พนักงาน)
@@ -27,6 +27,7 @@ class ShopVisit extends Model
      // ความสัมพันธ์กับ User (พนักงาน)
      public function employee()
      {
-         return $this->belongsTo(User::class, 'employee_id');
-     }
+        return $this->belongsTo(User::class, 'employee_id', 'user_id');
+    }
+
 }

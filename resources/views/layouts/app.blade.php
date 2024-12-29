@@ -265,7 +265,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="widgets.html">
+                <a href="{{ route('notifications.index') }}">
                   <i class="fas fa-desktop"></i>
                   <p>ระบบแจ้งเตือนไลน์</p>
                   <span class="badge badge-success">4</span>

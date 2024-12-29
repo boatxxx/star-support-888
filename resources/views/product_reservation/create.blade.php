@@ -22,9 +22,28 @@
     <form action="{{ route('product_reservation.store') }}" method="POST">
         @csrf
         <div class="alert alert-info">
-            ร้านค้าที่จองสินค้า: {{ $workRecord->shop->name }}
+            @if ($shop ?? $workRecord)
+                <!-- ถ้ามีข้อมูลร้านค้าแสดงชื่อร้าน -->
+                ร้านค้าที่จองสินค้า: {{ $shop->name ?? $workRecord->shop->name }}
+                <input type="hidden" name="shop_id" value="{{ $shop->shop_id ?? $workRecord->shop_id }}">
+            @else
+                <!-- ถ้าไม่มีข้อมูลร้านค้า -->
+                <p>ไม่พบข้อมูลร้านค้า</p>
+                <select name="shop_id" required>
+                    <option value="">เลือกร้านค้า</option>
+                    @foreach ($shops as $shopOption)
+                        <option value="{{ $shopOption->id }}">{{ $shopOption->name }}</option>
+                    @endforeach
+                </select>
+            @endif
         </div>
-        <input type="hidden" name="shop_id" value="{{ $workRecord->shop->shop_id }}">
+
+
+
+
+
+
+        </div>
 
         <!-- ส่วนเลือกสินค้า -->
         <div id="product-section" class="mb-4">

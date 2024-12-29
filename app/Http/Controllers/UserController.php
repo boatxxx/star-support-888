@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 use App\Models\Role; // ตรวจสอบการนำเข้าคลาส Role
 
@@ -40,7 +41,11 @@ class UserController extends Controller
         }
 
         $user->save();
+        $message = "พนักงานใหม่เพิ่มเข้าสู่ระบบ!\n" .
+        "ชื่อพนักงาน: {$user->name}\n" .
+        "อีเมล: {$user->email}\n";
 
+    $isSent = Notification::sendLineNotification($message);
         return redirect()->route('users.create')->with('success', 'User created successfully.');
     }
     public function show($id)
@@ -92,7 +97,12 @@ public function update(Request $request, $id)
 
     // Save the updated user information
     $user->save();
+    $user1 = Auth::User();
+    $userName = $user1->name;
+    $message = "แก้ไขข้อมูลพนักงาน!\n" .
+    "ชื่อพนักงาน: {$user->name}\n" ."แก้ไขโดยพนักงานชื่อ $userName";
 
+$isSent = Notification::sendLineNotification($message);
     // Redirect to the index page with a success message
     return redirect()->route('employees.index')->with('success', 'User updated successfully');
 }
@@ -101,7 +111,12 @@ public function destroy($id)
 {
     $user = User::findOrFail($id);
     $user->delete();
+    $user1 = Auth::User();
+    $userName = $user1->name;
+    $message = "ลบพนักงานออกจากระบบ!\n" .
+    "ชื่อพนักงาน: {$user->name}\n" ."แก้ไขโดยพนักงานชื่อ $userName";
 
+$isSent = Notification::sendLineNotification($message);
     return redirect()->route('employees.index')->with('success', 'User deleted successfully');
 }
 

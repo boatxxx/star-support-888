@@ -50,5 +50,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(PaymentCheck::class, 'received_by', 'user_id'); // received_by เป็น foreign key ที่อ้างอิงถึง user_id
     }
-
+public function shopVisits()
+    {
+        return $this->hasMany(ShopVisit::class, 'employee_id');
+    }
 }

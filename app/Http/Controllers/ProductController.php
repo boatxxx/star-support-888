@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product; // ตรวจสอบการใช้ชื่อโมเดลที่ถูกต้อง
 use App\Models\Warehouse;
 use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 use App\Models\Sale;
 
@@ -28,10 +29,11 @@ class ProductController extends Controller
 public function create()
 {
     $user = Auth::User();
+    $categories = Category::all(); // ดึงข้อมูลหมวดหมู่ทั้งหมด
 
     $warehouses = Warehouse::all();
 
-    return view('Product.create', compact('user','warehouses'));
+    return view('Product.create', compact('user','warehouses','categories'));
 
 }
 public function edit($id)
@@ -40,12 +42,13 @@ public function edit($id)
 
     // ดึงข้อมูลสินค้าที่ต้องการแก้ไข
     $product = Product::findOrFail($id);
+    $categories = Category::all(); // ดึงข้อมูลหมวดหมู่ทั้งหมด
 
     // ดึงข้อมูลคลังสินค้าทั้งหมด
     $warehouses = Warehouse::all();
 
     // ส่งข้อมูลไปยังมุมมอง 'Product.edit'
-    return view('Product.edit', compact('user', 'product', 'warehouses'));
+    return view('Product.edit', compact('user', 'product', 'warehouses','categories'));
 }
 
 public function store(Request $request)
@@ -63,8 +66,8 @@ public function store(Request $request)
         'stock' => 'required|integer',
         'expiration_date' => 'required|date',
         'Warehouse' => 'required|integer',
-        'product_id1' => 'nullable|string|max:255', // เพิ่มการ validate สำหรับ product_id1
-
+        'product_id1' => 'nullable|string|max:255',
+        'category_id' => 'nullable', // ตรวจสอบว่า category_id มีอยู่ในตาราง categorie
     ]);
 
     Product::create($validatedData);
@@ -82,7 +85,9 @@ public function update(Request $request, $id)
         'stock' => 'required|integer',
         'expiration_date' => 'required|date',
         'Warehouse' => 'required|integer',
-        'product_id1' => 'nullable|string|max:255', // เพิ่มการ validate สำหรับ product_id1
+        'product_id1' => 'nullable|string|max:255',
+        'category_id' => 'nullable', // ตรวจสอบว่า category_id มีอยู่ในตาราง categorie
+        // เพิ่มการ validate สำหรับ product_id1
     ]);
 
     // ดึงข้อมูลสินค้าที่ต้องการอัปเดต
@@ -106,6 +111,7 @@ public function index()
 
     // ดึงข้อมูลสินค้าทั้งหมด
     $products = Product::all();
+    $categories = Category::all(); // ดึงข้อมูลหมวดหมู่ทั้งหมด
 
     // ดึงข้อมูลยอดขาย
     $sales = Sale::select('product_id', DB::raw('SUM(quantity) as total_sold'))
@@ -116,7 +122,7 @@ public function index()
     $productMovements = Warehouse::with('warehouse') // เชื่อมโยงกับโมเดล Warehouse
         ->get();
 
-    return view('Product.index', compact('products', 'user', 'sales', 'productMovements'));
+    return view('Product.index', compact('products', 'user', 'sales', 'productMovements','categories'));
 }
 
 }

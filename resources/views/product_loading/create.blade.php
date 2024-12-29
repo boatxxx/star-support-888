@@ -4,7 +4,7 @@
 <div class="container">
     <h1>ขนสินค้าขึ้นรถ</h1>
 
-    <form action="{{ route('product_loading.store', $workRecord->id) }}" method="POST">
+    <form action="{{ route('product_loading.store', ['workRecordId' => $workRecord->id ?? null, 'shopId' => $shop->shop_id ?? null]) }}" method="POST">
 
         @csrf
 
@@ -22,7 +22,7 @@
                 <label for="products">สินค้า</label>
                 <div id="products-container">
                     <div class="product-group">
-                        <input type="hidden" name="work_record_id" value={{  $workRecord->id }}>
+                        <input type="hidden" name="work_record_id" value={{  $shop->shop_id ?? $workRecord->id }}>
 
                         <select name="product_ids[]" class="form-control" required>
                             <option value="" disabled selected>เลือกสินค้า</option>

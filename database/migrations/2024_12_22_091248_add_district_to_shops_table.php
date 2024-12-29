@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notifications', function (Blueprint $table) {
-            $table->bigIncrements('ID');
-            $table->string('Token', 200);
-            $table->timestamps();
+        Schema::table('shops', function (Blueprint $table) {
+            $table->string('district', 100)->nullable()->after('address');
         });
     }
 
@@ -23,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notifications');
+        Schema::table('shops', function (Blueprint $table) {
+            $table->dropColumn('district');
+        });
     }
 };

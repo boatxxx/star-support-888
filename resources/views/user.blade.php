@@ -21,7 +21,7 @@
                 <a href="{{ route('customer_visits.index') }}"><i class="fas fa-user-check"></i> ตรวจเยี่ยมลูกค้า</a>
         <a href="{{ route('shops.create') }}"><i class="fas fa-store"></i> สำรวจร้านค้า และแผนที่</a>
         <a href="{{ route('returns.create') }}"><i class="fas fa-undo"></i> รับคืนสินค้า</a>
-        <a href="{{ route('customer_visits.index') }}"><i class="fas fa-calendar-alt"></i> ตารางเยี่ยมลูกค้า</a>
+        <a href="{{ route('customer_visits.index2') }}"><i class="fas fa-calendar-alt"></i> ตารางเยี่ยมลูกค้า</a>
         <a href="#"><i class="fas fa-tags"></i> ตรวจสอบโปรโมชั่น</a>
     </div>
 

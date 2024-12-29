@@ -24,7 +24,7 @@
                 @foreach ($visits as $visit)
                     <tr>
                         <td>{{ $visit->id }}</td>
-                        <td>{{ $visit->shop->name }}</td>
+                        <td>{{ $visit->shop ? $visit->shop->name : 'ไม่มีข้อมูลร้าน' }}</td>
                         <td>{{ $visit->visit_date }}</td>
                         <td>{{ $visit->employee->name }}</td>
                         <td>{{ $visit->notes }}</td>

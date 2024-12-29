@@ -15,8 +15,10 @@ class CustomerVisit extends Model
         'shop_id',
         'visit_date',
         'employee_id',
-        'notes'
+        'notes',
+        'customer_name',  // เพิ่มฟิลด์ customer_name
     ];
+
 
     // ความสัมพันธ์กับร้านค้า
     public function shop()

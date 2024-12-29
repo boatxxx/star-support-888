@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ShopVisit;
 use App\Models\CustomerVisit;
+use App\Models\WorkRecord;
+use Illuminate\Support\Facades\DB;
 
 
 class ShopVisitController extends Controller
@@ -15,7 +17,7 @@ class ShopVisitController extends Controller
 
     public function shopVisits333(Request $request)
     {        $user = Auth::User();
-        $query = ShopVisit::with(['shop', 'employee']);
+        $query = CustomerVisit::with(['shop', 'employee']);
 
         // ตรวจสอบว่ามีคำค้นหามาใน request หรือไม่
         if ($request->has('search')) {
@@ -48,6 +50,29 @@ class ShopVisitController extends Controller
 
         return view('shop_visits.createuser', compact('employees', 'shopVisits'));
     }
+    public function index3()
+{
+    // รับข้อมูลผู้ใช้งานที่เข้าสู่ระบบ
+    $user = Auth::user();
+
+    // รับ user_id ของผู้ใช้งานที่เข้าสู่ระบบ
+    $userId = $user->user_id;
+
+    // ดึงข้อมูลการเยี่ยมร้านค้าทั้งหมดที่ตรงกับ employee_id ของผู้ใช้งาน
+    // ดึงข้อมูลการเยี่ยมร้านค้าของผู้ใช้งาน พร้อมข้อมูลร้านค้า (shop)
+    $shopVisits = ShopVisit::where('employee_id', $userId)
+    ->with(['shop', 'employee']) // โหลดข้อมูลที่เกี่ยวข้องกับร้านค้าและพนักงาน
+    ->get();
+    // ตรวจสอบข้อมูลที่ดึงมา
+
+
+    // ส่งข้อมูลไปที่ Blade view
+    return view('shop_visits.customer_visits1', compact('shopVisits', 'user'));
+}
+
+
+
+
     // แสดงฟอร์มเพิ่มการเยี่ยมร้านค้า
     public function show($id)
 {
@@ -62,6 +87,15 @@ class ShopVisitController extends Controller
         $employees = User::all();
 
         return view('shop_visits.create', compact('shops', 'employees', 'user'));
+    }
+    public function create005()
+    {
+        $user = Auth::user();
+        // ดึงข้อมูลร้านค้าและพนักงานทั้งหมด
+        $shops = Shop::all();
+        $employees = User::all();
+
+        return view('shop_visits.create', compact('shops', 'employees','user'));
     }
     public function createuser()
     {
@@ -120,39 +154,49 @@ class ShopVisitController extends Controller
     {        $user = Auth::User();
         $today = \Carbon\Carbon::now()->format('l'); // รับวันในสัปดาห์ในรูปแบบภาษาอังกฤษ (Monday, etc.)
     $userId = auth()->user()->user_id; // รับรหัสผู้ใช้งานที่เข้าสู่ระบบ
+    $workRecord = WorkRecord::find(1); // หรือการค้นหา workRecord ตามเงื่อนไข
 
     $shopVisits = ShopVisit::where('visit_date', $today)
         ->where('employee_id', $userId)
         ->with(['shop', 'employee'])
         ->get();
 
-    return view('shop_visits.customer_visits', compact('shopVisits','user'));
+    return view('shop_visits.customer_visits', compact('shopVisits','user','workRecord'));
 }
 public function create1(Request $request)
 {        $user = Auth::User();
     // รับค่า shop_id จากหน้าที่แล้ว
     $shopId = $request->get('shop_id');
+    $shop = Shop::findOrFail($shopId); // ตรวจสอบว่า shop_id มีอยู่จริง
 
     // นำค่า shopId ไปใช้ใน view เพื่อกรอกในฟอร์ม
-    return view('shop_visits.create1', compact('shopId','user'));
+    return view('shop_visits.create1', compact('shopId','user','shop'));
 }
 
 // Store the newly created customer visit in the database
 public function store1(Request $request)
-{        $user = Auth::User();
+{
+    $user = Auth::user();
+
     // Validate the form data
     $validated = $request->validate([
-        'customer_name' => 'required',
         'shop_id' => 'required|exists:shops,shop_id',
-        'visit_date' => 'required|date',
         'employee_id' => 'required|exists:users,user_id',
-        'notes' => 'nullable|string',
+        'notes' => 'required|string',
+        'customer_name' => 'required|string|max:200',
     ]);
 
-    // Create a new CustomerVisit record with the validated data
-    CustomerVisit::create($validated);
+    // เพิ่มฟิลด์ visit_date
+    $data = array_merge($validated, [
+        'visit_date' => now(),
+    ]);
 
-    // Redirect to the shop visits index page with a success message
-    return redirect()->route('shop_visits.index')->with('success', 'บันทึกการเยี่ยมลูกค้าเรียบร้อยแล้ว');
+    // Create a new CustomerVisit record
+    CustomerVisit::create($data);
+
+    // Redirect with success message
+    return back()->with('success', 'บันทึกการเยี่ยมลูกค้าเรียบร้อยแล้ว');
 }
+
+
 }
