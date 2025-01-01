@@ -15,9 +15,21 @@ class shopVisit1 extends Controller
     public function createuser()
     {
         $user = Auth::user();
-        $shops = Shop::all();
         $employees = User::all();
 
-        return view('shop_visits.create', compact('shops', 'employees', 'user'));
+        return view('shop_visits.create', compact('employees', 'user'));
     }
+
+    // เพิ่มฟังก์ชันสำหรับดึงร้านค้าตามอำเภอ
+    public function getShopsByDistrict(Request $request)
+    {
+        $district = $request->input('district');
+
+        // ดึงข้อมูลร้านค้าที่อำเภอตรงกับคำค้น
+        $shops = Shop::where('district', 'LIKE', "{$district} -%")->get();
+
+        return response()->json($shops);
+    }
+
+
 }

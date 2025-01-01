@@ -20,15 +20,51 @@
             @method('PUT')
         @endif
         <div class="form-group">
-            <label for="shop_id">ร้านค้า</label>
-            <select class="form-control" id="shop_id" name="shop_id" required>
-                @foreach ($shops as $shop)
-                    <option value="{{ $shop->shop_id }}" {{ (isset($shopVisit) && $shopVisit->shop_id == $shop->id) ? 'selected' : '' }}>
-                        {{ $shop->name }}
-                    </option>
-                @endforeach
+            <label for="district">อำเภอ</label>
+            <select id="district" name="district" class="form-control" required>
+                <option value="">-- กรุณาเลือกอำเภอ --</option>
+                <option value="เมืองระยอง">เมืองระยอง</option>
+                <option value="บ้านฉาง">บ้านฉาง</option>
+                <option value="แกลง">แกลง</option>
+                <option value="วังจันทร์">วังจันทร์</option>
+                <option value="บ้านค่าย">บ้านค่าย</option>
+                <option value="ปลวกแดง">ปลวกแดง</option>
+                <option value="เขาชะเมา">เขาชะเมา</option>
+                <option value="นิคมพัฒนา">นิคมพัฒนา</option>
             </select>
         </div>
+        <div class="form-group">
+            <label for="shop_id">ร้านค้า</label>
+            <select class="form-control" id="shop_id" name="shop_id" required>
+                <option value="">-- กรุณาเลือกร้านค้า --</option>
+            </select>
+        </div>
+        <!-- เพิ่ม JavaScript สำหรับการอัปเดตร้านค้า -->
+        <script>
+        document.getElementById('district').addEventListener('change', function () {
+    const district = this.value;
+    const shopDropdown = document.getElementById('shop_id');
+
+    // ล้างรายการเดิม
+    shopDropdown.innerHTML = '<option value="">-- กรุณาเลือกร้านค้า --</option>';
+
+    if (district) {
+        fetch(`/api/shops-by-district?district=${district}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(shop => {
+                    const option = document.createElement('option');
+                    option.value = shop.shop_id;
+                    option.textContent = shop.name;
+                    shopDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+});
+
+        </script>
+
         <div class="form-group">
             <label for="visit_date">วันในสัปดาห์</label>
             <select class="form-control" id="visit_date" name="visit_date" required>
@@ -39,8 +75,7 @@
                 <option value="Thursday" {{ (isset($shopVisit) && $shopVisit->visit_date == 'Thursday') ? 'selected' : '' }}>วันพฤหัสบดี</option>
                 <option value="Friday" {{ (isset($shopVisit) && $shopVisit->visit_date == 'Friday') ? 'selected' : '' }}>วันศุกร์</option>
                 <option value="Saturday" {{ (isset($shopVisit) && $shopVisit->visit_date == 'Saturday') ? 'selected' : '' }}>วันเสาร์</option>
-                <option value="Sunday" {{ (isset($shopVisit) && $shopVisit->visit_date == 'Sunday') ? 'selected' : '' }}>วันอาทิตย์</option>
-            </select>
+                <option value="Sunday" {{ (isset($shopVisit) && $shopVisit->visit_date == 'Sunday') ? 'selected' : '' }}>วันอาทิตย์</option>            </select>
         </div>
         <div class="form-group">
             <label for="employee_id">พนักงาน</label>

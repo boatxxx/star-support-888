@@ -81,6 +81,7 @@ Route::get('/customer-visits007', [ShopVisitController::class, 'index3'])->name(
 
 Route::get('/shop_visits/create', [ShopVisitController::class, 'create1'])->name('shop_visits.create1');
 Route::get('/shop-visits/create005', [ShopVisitController::class, 'create005'])->name('shop_visits.create005');
+Route::get('/api/shops-by-district', [shopVisit1::class, 'getShopsByDistrict']);
 
 Route::get('/shop_visits/create1', [ShopVisitController::class, 'create'])->name('shop_visits.create');
 Route::get('/shopVisit1/createuser', [shopVisit1::class, 'createuser'])->name('shopVisit1.createuser');

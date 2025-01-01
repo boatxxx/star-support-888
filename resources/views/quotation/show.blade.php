@@ -19,125 +19,114 @@
         @csrf
         <!-- Fields -->
 
+        <h3>รายละเอียดออเดอร์</h3>
 
-    <h3>รายละเอียดออเดอร์</h3>
-
-    @if($workRecord)
-        <p><strong>วันที่ออเดอร์:</strong> {{ $workRecord->order_date }}</p>
-        <h3>ออเดอร์: {{ $workRecord->id }}</h3>
-        <h3>ร้านค้า: {{ $workRecord->shop->name ??  $shopName  }}</h3>
-    @else
-        <p>ไม่พบข้อมูลออเดอร์</p>
-    @endif
-
-    @if($shop)
-    @elseif($workRecord)
-    @endif
-
-    <h4>สินค้าที่สั่งซื้อ</h4>
-    <div id="products-container">
-        @if($workRecord && $workRecord->items)
-            @foreach ($workRecord->items as $index => $item)
-            <div class="product-group d-flex align-items-end mb-2">
-                <select name="items[{{ $index }}][product_id]" class="form-control me-2 product-select" data-index="{{ $index }}" required>
-                    <option value="{{ $item->product->product_id }}" selected>{{ $item->product->name }}</option>
-                    @foreach ($products as $product)
-                        <option value="{{ $product->product_id }}"
-                            @if ($product->product_id == $item->product->product_id) selected @endif
-                            data-price="{{ $product->price }}">
-                            {{ $product->name }}
-                        </option>
-                    @endforeach
-                </select>
-                <input type="number" name="items[{{ $index }}][quantity]" class="form-control me-2" value="{{ $item->quantity }}" min="1" step="1" placeholder="จำนวนสินค้า" required>
-                <input type="number" step="0.01" name="items[{{ $index }}][price]" class="form-control me-2 price-input" value="{{ $item->product->price }}" readonly>
-                <button type="button" class="btn btn-danger remove-product">ลบ</button>
-            </div>
-            @endforeach
+        @if($workRecord)
+            <p><strong>วันที่ออเดอร์:</strong> {{ $workRecord->order_date }}</p>
+            <h3>ออเดอร์: {{ $workRecord->id }}</h3>
+            <h3>ร้านค้า: {{ $workRecord->shop->name ??  $shopName }}</h3>
         @else
-            <p>ยังไม่มีสินค้าสำหรับออเดอร์นี้</p>
+            <p>ไม่พบข้อมูลออเดอร์</p>
         @endif
-    </div>
 
-    <h4>โปรโมชั่นที่ใช้ได้</h4>
-    <div class="promotion-section">
-        @foreach ($promotions as $promotion)
-        <div class="promotion-item mb-3">
-            <h5>
-                <input type="radio" name="selected_promotion" value="{{ $promotion->promotion_id }}" id="promotion-{{ $promotion->promotion_id }}" required>
-                <label for="promotion-{{ $promotion->promotion_id }}">{{ $promotion->name }}</label>
-            </h5>
-            <p>{{ $promotion->description }}</p>
-            <strong>ชนิดโปรโมชั่น:</strong>
-            <span>
-                @if($promotion->type === 'percentage_discount')
-                    ลดเป็นเปอร์เซ็นต์
-                @elseif($promotion->type === 'fixed_amount')
-                    ลดจำนวนคงที่
-                @elseif($promotion->type === 'product_specific_discount')
-                    ลดเฉพาะสินค้าบางรายการ
-                @else
-                    ชนิดโปรโมชั่นอื่น ๆ
-                @endif
-            </span>
+        <h4>สินค้าที่สั่งซื้อ</h4>
+        <div id="products-container">
+            @if($workRecord && $workRecord->items)
+                @foreach ($workRecord->items as $index => $item)
+                    <div class="product-group d-flex align-items-end mb-2">
+                        <select name="items[{{ $index }}][category_id]" class="form-control me-2 category-select" data-index="{{ $index }}" required>
+                            <option value="">เลือกหมวดหมู่</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" @if ($category->id == $item->product->category_id) selected @endif>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        <select name="items[{{ $index }}][product_id]" class="form-control me-2 product-select" data-index="{{ $index }}" required>
+                            <option value="{{ $item->product->product_id }}" selected>{{ $item->product->name }}</option>
+                            @foreach ($products as $product)
+                                <option value="{{ $product->product_id }}"
+                                    @if ($product->product_id == $item->product->product_id) selected @endif
+                                    data-price="{{ $product->price }}">
+                                    {{ $product->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="number" name="items[{{ $index }}][quantity]" class="form-control me-2" value="{{ $item->quantity }}" min="1" step="1" placeholder="จำนวนสินค้า" required>
+                        <input type="number" step="0.01" name="items[{{ $index }}][price]" class="form-control me-2 price-input" value="{{ $item->product->price }}" readonly>
+                        <button type="button" class="btn btn-danger remove-product">ลบ</button>
+                    </div>
+                @endforeach
+            @else
+                <p>ยังไม่มีสินค้าสำหรับออเดอร์นี้</p>
+            @endif
         </div>
-        @endforeach
-    </div>
 
-    <button type="button" class="btn btn-primary mt-2" id="add-product">เพิ่มสินค้า</button>
-    <button type="submit" class="btn btn-primary mt-4">สรุปใบเสนอราคา</button>
-</form>
+        <button type="button" class="btn btn-primary mt-2" id="add-product">เพิ่มสินค้า</button>
+        <button type="submit" class="btn btn-primary mt-4">สรุปใบเสนอราคา</button>
+    </form>
 </div>
 
 <script>
-    // Script handling price updates and adding/removing products
-    document.addEventListener('DOMContentLoaded', function() {
-        // Update price when a product is selected
-        const productSelects = document.querySelectorAll('.product-select');
-        productSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                const priceInput = this.closest('.product-group').querySelector('.price-input');
-                const selectedOption = this.options[this.selectedIndex];
-                const price = selectedOption.getAttribute('data-price');
+    document.addEventListener('DOMContentLoaded', function () {
+        const categories = @json($categories); // ส่งข้อมูลหมวดหมู่ไปยัง JS
+        const productContainer = document.getElementById('products-container');
 
-                priceInput.value = price; // Update the price
-            });
+        // ฟังก์ชันกรองสินค้าเมื่อเลือกหมวดหมู่
+        productContainer.addEventListener('change', function (event) {
+            if (event.target.classList.contains('category-select')) {
+                const categoryId = event.target.value;
+                const productSelect = event.target.closest('.product-group').querySelector('.product-select');
+                productSelect.innerHTML = '<option value="" disabled selected>เลือกสินค้า</option>';
+
+                if (categoryId) {
+                    const selectedCategory = categories.find(category => category.id == categoryId);
+                    if (selectedCategory) {
+                        selectedCategory.products.forEach(product => {
+                            const option = document.createElement('option');
+                            option.value = product.product_id;
+                            option.textContent = product.name;
+                            option.dataset.price = product.price;
+                            productSelect.appendChild(option);
+                        });
+                    }
+                }
+            }
         });
 
-        // Add new product group
-        let productIndex = {{ count($workRecord->items ?? []) }};
-        document.getElementById('add-product').addEventListener('click', function() {
-            const container = document.getElementById('products-container');
+        // เพิ่มสินค้าใหม่
+        let productIndex = 1;
+        document.getElementById('add-product').addEventListener('click', function () {
             const productGroup = document.createElement('div');
             productGroup.className = 'product-group d-flex align-items-end mb-2';
-            productGroup.innerHTML =
-                `<select name="items[${productIndex}][product_id]" class="form-control me-2 product-select" required>
-                    <option value="" disabled selected>เลือกสินค้า</option>
-                    @foreach ($products as $product)
-                        <option value="{{ $product->product_id }}" data-price="{{ $product->price }}">{{ $product->name }}</option>
+            productGroup.innerHTML = `
+                <select name="items[${productIndex}][category_id]" class="form-control me-2 category-select" required>
+                    <option value="">เลือกหมวดหมู่</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
+                </select>
+                <select name="items[${productIndex}][product_id]" class="form-control me-2 product-select" required>
+                    <option value="" disabled selected>เลือกสินค้า</option>
                 </select>
                 <input type="number" name="items[${productIndex}][quantity]" class="form-control me-2" placeholder="จำนวนสินค้า" required min="1" step="1">
                 <input type="number" step="0.01" name="items[${productIndex}][price]" class="form-control me-2 price-input" readonly>
                 <button type="button" class="btn btn-danger remove-product">ลบ</button>`;
-            container.appendChild(productGroup);
+            productContainer.appendChild(productGroup);
             productIndex++;
-
-            // Add event listener for new select dropdown
-            const newSelect = productGroup.querySelector('.product-select');
-            newSelect.addEventListener('change', function() {
-                const priceInput = productGroup.querySelector('.price-input');
-                const selectedOption = this.options[this.selectedIndex];
-                const price = selectedOption.getAttribute('data-price');
-
-                priceInput.value = price; // Update the price
-            });
         });
 
-        // Remove product group
-        document.getElementById('products-container').addEventListener('click', function(event) {
+        // ลบสินค้า
+        productContainer.addEventListener('click', function (event) {
             if (event.target.classList.contains('remove-product')) {
-                event.target.parentElement.remove();
+                event.target.closest('.product-group').remove();
+            }
+        });
+
+        // อัปเดตราคาเมื่อเลือกสินค้า
+        productContainer.addEventListener('change', function (event) {
+            if (event.target.classList.contains('product-select')) {
+                const selectedOption = event.target.options[event.target.selectedIndex];
+                const priceInput = event.target.closest('.product-group').querySelector('.price-input');
+                priceInput.value = selectedOption.dataset.price || 0;
             }
         });
     });
