@@ -1,35 +1,77 @@
 @extends('layouts.app')
+<style>
+@media (max-width: 767px) {
+    .main-header {
+        display: none; /* ซ่อน main-header บนหน้าจอมือถือ */
+    }
 
+    .navbar {
+        display: none; /* ซ่อน navbar บนหน้าจอมือถือ */
+    }
+}
+
+    </style>
 @section('content')
 <div class="container">
     <h1 class="mb-4">ร้านค้าทั้งหมด</h1>
 
     <!-- ระบบค้นหา -->
     <form action="{{ route('shops.index') }}" method="GET" class="mb-4">
-        <div class="row g-2 align-items-center">
-            <div class="col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="ค้นหาชื่อร้านค้า หรือที่อยู่" value="{{ request('search') }}">
+        <div class="row mb-3">
+            <!-- ค้นหาคำ -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="search">คำค้นหา</label>
+                    <input type="text" id="search" name="search" class="form-control" value="{{ request('search') }}">
+                </div>
             </div>
-            <div class="col-md-3">
-                <select name="status" class="form-select">
-                    <option value="">-- สถานะ --</option>
-                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>แผนที่ลิ้ง</option>
-                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>ละติจูด/ลองจิจูด</option>
-                </select>
+
+            <!-- อำเภอ -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="district">อำเภอ</label>
+                    <select id="district" name="district" class="form-control">
+                        <option value="">-- กรุณาเลือกอำเภอ --</option>
+                        @foreach ($districts as $district)
+                            <option value="{{ $district }}" {{ old('district', request('district')) == $district ? 'selected' : '' }}>{{ $district }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <div class="col-md-3">
-                <select name="employee" class="form-select">
-                    <option value="">-- ผู้รับผิดชอบ --</option>
-                    @foreach($employees as $employee)
+
+        </div>
+
+        <div class="row mb-3">
+            <!-- สถานะ -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="status">สถานะ</label>
+                    <select name="status" class="form-select">
+                        <option value="">-- สถานะ --</option>
+                        <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>แผนที่ลิ้ง</option>
+                        <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>ละติจูด/ลองจิจูด</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ผู้รับผิดชอบ -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="employee">ผู้รับผิดชอบ</label>
+                    <select id="employee" name="employee" class="form-control">
+                        <option value="">-- กรุณาเลือกผู้รับผิดชอบ --</option>
+                        @foreach($employees as $employee)
                         <option value="{{ $employee->user_id }}" {{ request('employee') == $employee->user_id ? 'selected' : '' }}>
                             {{ $employee->name }}
                         </option>
                     @endforeach
-                </select>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">ค้นหา</button>
-            </div>
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary">ค้นหา</button>
         </div>
     </form>
 

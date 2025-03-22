@@ -15,14 +15,12 @@ class ShopController extends Controller
         $user = Auth::user();
         $query = Shop::query();
 
-       // กรองตามคำค้นหา
-if ($request->has('search') && !empty($request->search)) {
-    $query->where('name', 'like', '%' . $request->search . '%')
-          ->orWhere('address', 'like', '%' . $request->search . '%')
-          ->orWhere('district', 'like', '%' . $request->search . '%');
-}
-
-
+        // กรองตามคำค้นหา
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('address', 'like', '%' . $request->search . '%')
+                  ->orWhere('district', 'like', '%' . $request->search . '%');
+        }
 
         // กรองตามสถานะ
         if ($request->has('status') && $request->status !== null) {
@@ -34,6 +32,11 @@ if ($request->has('search') && !empty($request->search)) {
             $query->whereHas('shopVisits', function ($q) use ($request) {
                 $q->where('employee_id', $request->employee);
             });
+        }
+
+        // กรองตามอำเภอ
+        if ($request->has('district') && !empty($request->district)) {
+            $query->where('district', 'like', '%' . $request->district . '%');
         }
 
         // การแบ่งหน้า (Pagination)
@@ -50,10 +53,14 @@ if ($request->has('search') && !empty($request->search)) {
             }
         }
 
+
         // ดึงรายชื่อผู้รับผิดชอบทั้งหมด
         $employees = User::all();
 
-        return view('shops.index', compact('shops', 'user', 'employees'));
+        // ดึงรายชื่ออำเภอทั้งหมด
+        $districts = ['เมืองระยอง', 'บ้านฉาง', 'แกลง', 'วังจันทร์', 'บ้านค่าย', 'ปลวกแดง', 'เขาชะเมา', 'นิคมพัฒนา', 'สัตหีบ'];
+
+        return view('shops.index', compact('shops', 'user', 'employees', 'districts'));
     }
 
 
