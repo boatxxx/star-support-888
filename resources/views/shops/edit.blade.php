@@ -3,6 +3,7 @@
 @section('content')
 <div class="container">
     <h1>แก้ไขร้านค้า</h1>
+
     <form action="{{ route('shops.update', $shop->shop_id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -15,7 +16,10 @@
             <label for="address">ที่อยู่</label>
             <textarea name="address" class="form-control" required>{{ old('address', $shop->address) }}</textarea>
         </div>
-
+        <div class="form-group">
+            <label for="phone">เบอร์โทร</label>
+            <textarea name="phone" class="form-control" required>{{ old('address', $shop->phone) }}</textarea>
+        </div>
         <div class="form-group">
             <label for="district">อำเภอ</label>
             <select id="district" name="district" class="form-control" required>
@@ -123,7 +127,7 @@ document.getElementById('district').addEventListener('change', function() {
     "หนองบัว",
     "ชากบก"
 ],"สัตหีบ": ["สัตหีบ", "นาจอมเทียน", "พลูตาหลวง", "บางเสร่", "แสมสาร"],
-        "ปลวกแดง": ["ปลวกแดง", "ตาสิทธิ์", "ละหาร", "แม่น้ำคู้"],
+        "ปลวกแดง": ["ปลวกแดง", "ตาสิทธิ์", "ละหาร", "แม่น้ำคู้", "มาบยางพร", "หนองไร่"],
         "เขาชะเมา": ["น้ำเป็น", "ห้วยทับมอญ", "ชำฆ้อ", "เขาน้อย"],
         "นิคมพัฒนา": ["นิคมพัฒนา", "มาบข่า", "พนานิคม", "มะขามคู่"]
     };

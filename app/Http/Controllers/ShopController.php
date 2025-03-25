@@ -39,6 +39,10 @@ class ShopController extends Controller
             $query->where('district', 'like', '%' . $request->district . '%');
         }
 
+        if ($request->has('subdistrict') && !empty($request->subdistrict)) {
+            $query->where('district', 'like', '%' . $request->subdistrict . '%');
+        }
+
         // การแบ่งหน้า (Pagination)
         $shops = $query->paginate(10);
 
@@ -78,20 +82,27 @@ class ShopController extends Controller
         $user = Auth::User();
         $userName = $user->name; // ดึงชื่อของผู้ใช้จากฟิลด์ 'name' ในตาราง 'users'
 
-        $request->validate([
+        $messages = [
+            'phone.unique' => 'เบอร์โทรศัพท์นี้มีอยู่ในระบบแล้ว กรุณาใช้เบอร์โทรศัพท์อื่น',
+            // กำหนดข้อความแจ้งเตือนอื่น ๆ ที่ต้องการ
+        ];
+
+        $validatedData = $request->validate([
             'name' => 'required|string|max:20',
             'address' => 'required|string|max:255',
-            'district' => 'required|string|max:255', // เพิ่ม validation สำหรับอำเภอและตำบล
-            'subdistrict' => 'required|string|max:255', // เพิ่ม validation สำหรับตำบล
+            'phone' => 'required|string|max:20|unique:shops,phone',
+            'district' => 'required|string|max:255',
+            'subdistrict' => 'required|string|max:255',
             'Link_google' => 'nullable|string',
             'sta' => 'required|boolean',
             'Latitude' => 'nullable|string|max:255',
             'Longitude' => 'nullable|string|max:255',
-        ]);
+        ], $messages);
 
         $shop = new Shop();
         $shop->name = $request->name;
         $shop->address = $request->address;
+        $shop->phone = $request->phone;
         $shop->district = "{$request->district} - {$request->subdistrict}"; // รวมอำเภอและตำบลลงในฟิลด์เดียว
         $shop->Link_google = $request->Link_google;
         $shop->sta = $request->sta;
@@ -132,19 +143,28 @@ class ShopController extends Controller
 public function update(Request $request, Shop $shop)
 {
 
-    $request->validate([
+
+    $messages = [
+        'phone.unique' => 'เบอร์โทรศัพท์นี้มีอยู่ในระบบแล้ว กรุณาใช้เบอร์โทรศัพท์อื่น',
+        // กำหนดข้อความแจ้งเตือนอื่น ๆ ที่ต้องการ
+    ];
+
+    $validatedData = $request->validate([
         'name' => 'required|string|max:20',
         'address' => 'required|string|max:255',
-        'Link_google' => 'nullable|string',
-        'district' => 'required|string|max:255', // เพิ่ม validation สำหรับอำเภอและตำบล
+        'phone' => 'required|string|max:20|unique:shops,phone',
+        'district' => 'required|string|max:255',
         'subdistrict' => 'required|string|max:255',
+        'Link_google' => 'nullable|string',
         'sta' => 'required|boolean',
         'Latitude' => 'nullable|string|max:255',
         'Longitude' => 'nullable|string|max:255',
-    ]);
+    ], $messages);
 
     $shop->name = $request->input('name');
     $shop->address = $request->input('address');
+    $shop->phone = $request->input('phone');
+
     $shop->district = "{$request->district} - {$request->subdistrict}"; // รวมอำเภอและตำบลลงในฟิลด์เดียว
     $shop->link_google = $request->input('link_google'); // Make sure this matches the column name
     $shop->sta = $request->input('sta');

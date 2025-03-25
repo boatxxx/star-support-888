@@ -19,7 +19,7 @@
     <form action="{{ route('shops.index') }}" method="GET" class="mb-4">
         <div class="row mb-3">
             <!-- ค้นหาคำ -->
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="search">คำค้นหา</label>
                     <input type="text" id="search" name="search" class="form-control" value="{{ request('search') }}">
@@ -27,23 +27,39 @@
             </div>
 
             <!-- อำเภอ -->
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="district">อำเภอ</label>
-                    <select id="district" name="district" class="form-control">
+                    <select id="district" name="district" class="form-control" required>
                         <option value="">-- กรุณาเลือกอำเภอ --</option>
-                        @foreach ($districts as $district)
-                            <option value="{{ $district }}" {{ old('district', request('district')) == $district ? 'selected' : '' }}>{{ $district }}</option>
-                        @endforeach
+                        <option value="เมืองระยอง">เมืองระยอง</option>
+                        <option value="บ้านฉาง">บ้านฉาง</option>
+                        <option value="แกลง">แกลง</option>
+                        <option value="วังจันทร์">วังจันทร์</option>
+                        <option value="บ้านค่าย">บ้านค่าย</option>
+                        <option value="ปลวกแดง">ปลวกแดง</option>
+                        <option value="เขาชะเมา">เขาชะเมา</option>
+                        <option value="นิคมพัฒนา">นิคมพัฒนา</option>
+                        <option value="สัตหีบ">สัตหีบ</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <!-- Dropdown สำหรับเลือกตำบล -->
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label for="subdistrict">ตำบล</label>
+                    <select id="subdistrict" name="subdistrict" class="form-control" required>
+                        <option value="">-- กรุณาเลือกตำบล --</option>
+                        <!-- ตัวเลือกตำบลจะถูกโหลดตามการเลือกอำเภอ -->
                     </select>
                 </div>
             </div>
 
-        </div>
-
-        <div class="row mb-3">
             <!-- สถานะ -->
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="status">สถานะ</label>
                     <select name="status" class="form-select">
@@ -53,9 +69,11 @@
                     </select>
                 </div>
             </div>
+        </div>
 
+        <div class="row mb-3">
             <!-- ผู้รับผิดชอบ -->
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="form-group">
                     <label for="employee">ผู้รับผิดชอบ</label>
                     <select id="employee" name="employee" class="form-control">
@@ -64,7 +82,7 @@
                         <option value="{{ $employee->user_id }}" {{ request('employee') == $employee->user_id ? 'selected' : '' }}>
                             {{ $employee->name }}
                         </option>
-                    @endforeach
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -97,6 +115,7 @@
                     <th>รหัสร้านค้า</th>
                     <th>ชื่อร้านค้า</th>
                     <th>ที่อยู่</th>
+                    <th>เบอร์โทร</th>
                     <th>อำเภอ</th>
                     <th>แผนที่ Google</th>
                     <th>สถานะ</th>
@@ -112,6 +131,7 @@
                         <td>{{ $shop->shop_id }}</td>
                         <td>{{ $shop->name }}</td>
                         <td>{{ $shop->address }}</td>
+                        <td>{{ $shop->phone ?? 'ไม่พบข้อมูล' }}</td>
                         <td>{{ $shop->district }}</td>
                         <td>
                             @if($shop->link_google)
@@ -158,9 +178,80 @@
     </div>
 </div>
 
-<!-- JavaScript -->
+
+
 <script>
-    document.querySelectorAll('.delete-btn').forEach(button => {
+// JavaScript สำหรับโหลดตำบลตามอำเภอที่เลือก
+document.getElementById('district').addEventListener('change', function() {
+    var district = this.value;
+    var subdistrictSelect = document.getElementById('subdistrict');
+
+    // เคลียร์ตำบลก่อน
+    subdistrictSelect.innerHTML = '<option value="">-- กรุณาเลือกตำบล --</option>';
+
+    // กำหนดข้อมูลตำบลตามอำเภอ
+    var subdistricts = {
+        "เมืองระยอง": [    "ท่าประดู่",
+    "เชิงเนิน",
+    "ตะพง",
+    "ปากน้ำ",
+    "เพ",
+    "แกลง",
+    "บ้านแลง",
+    "นาตาขวัญ",
+    "เนินพระ",
+    "กะเฉด",
+    "ทับมา",
+    "น้ำคอก",
+    "ห้วยโป่ง",
+    "มาบตาพุด",
+    "สำนักทอง"
+],
+        "บ้านฉาง": ["สำนักท้อน",
+    "พลา",
+    "บ้านฉาง",],
+        "แกลง": ["ทางเกวียน",
+    "วังหว้า",
+    "ชากโดน",
+    "เนินฆ้อ",
+    "กร่ำ",
+    "ชากพง",
+    "กระแสบน",
+    "บ้านนา",
+    "ทุ่งควายกิน",
+    "กองดิน",
+    "คลองปูน",
+    "พังราด",
+    "ปากน้ำกระแส",
+    "ห้วยยาง",
+    "สองสลึง"],
+        "วังจันทร์": ["วังจันทร์", "ชุมแสง", "ป่ายุบใน", "พลงตาเอี่ยม"],
+        "บ้านค่าย": ["บ้านค่าย",
+    "หนองละลอก",
+    "หนองตะพาน",
+    "ตาขัน",
+    "บางบุตร",
+    "หนองบัว",
+    "ชากบก"
+],"สัตหีบ": ["สัตหีบ", "นาจอมเทียน", "พลูตาหลวง", "บางเสร่", "แสมสาร"],
+        "ปลวกแดง": ["ปลวกแดง", "ตาสิทธิ์", "ละหาร", "แม่น้ำคู้", "มาบยางพร", "หนองไร่"],
+        "เขาชะเมา": ["น้ำเป็น", "ห้วยทับมอญ", "ชำฆ้อ", "เขาน้อย"],
+        "นิคมพัฒนา": ["นิคมพัฒนา", "มาบข่า", "พนานิคม", "มะขามคู่"]
+    };
+
+    // เพิ่มตำบลลงใน dropdown
+    if (subdistricts[district]) {
+        subdistricts[district].forEach(function(subdistrict) {
+            var option = document.createElement('option');
+            option.value = subdistrict;
+            option.textContent = subdistrict;
+            subdistrictSelect.appendChild(option);
+        });
+    }
+});
+
+//
+document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             if (!confirm('คุณต้องการลบร้านค้านี้ใช่หรือไม่?')) {
                 e.preventDefault();
@@ -168,4 +259,5 @@
         });
     });
 </script>
+
 @endsection

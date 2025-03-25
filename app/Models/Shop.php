@@ -13,6 +13,7 @@ class Shop extends Model
     protected $fillable = [
         'name',
         'address',
+        'phone',
         'district',
         'Link_google',
         'sta',
