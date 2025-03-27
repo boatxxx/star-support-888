@@ -28,11 +28,113 @@
                 <option value="แกลง">แกลง</option>
                 <option value="วังจันทร์">วังจันทร์</option>
                 <option value="บ้านค่าย">บ้านค่าย</option>
+                <option value="สัตหีบ">สัตหีบ</option>
                 <option value="ปลวกแดง">ปลวกแดง</option>
                 <option value="เขาชะเมา">เขาชะเมา</option>
                 <option value="นิคมพัฒนา">นิคมพัฒนา</option>
             </select>
         </div>
+
+        <div class="form-group">
+            <label for="subdistrict">ตำบล</label>
+            <select id="subdistrict" name="subdistrict" class="form-control" required>
+                <option value="">-- กรุณาเลือกตำบล --</option>
+            </select>
+        </div>
+        <button type="button" id="fetchShops" class="btn btn-primary">ดึงข้อมูลร้านค้า</button>
+
+        <script>
+            const subdistrictsByDistrict =  {
+        "เมืองระยอง": [    "ท่าประดู่",
+    "เชิงเนิน",
+    "ตะพง",
+    "ปากน้ำ",
+    "เพ",
+    "แกลง",
+    "บ้านแลง",
+    "นาตาขวัญ",
+    "เนินพระ",
+    "กะเฉด",
+    "ทับมา",
+    "น้ำคอก",
+    "ห้วยโป่ง",
+    "มาบตาพุด",
+    "สำนักทอง"
+],
+        "บ้านฉาง": ["สำนักท้อน",
+    "พลา",
+    "บ้านฉาง",],
+        "แกลง": ["ทางเกวียน",
+    "วังหว้า",
+    "ชากโดน",
+    "เนินฆ้อ",
+    "กร่ำ",
+    "ชากพง",
+    "กระแสบน",
+    "บ้านนา",
+    "ทุ่งควายกิน",
+    "กองดิน",
+    "คลองปูน",
+    "พังราด",
+    "ปากน้ำกระแส",
+    "ห้วยยาง",
+    "สองสลึง"],
+        "วังจันทร์": ["วังจันทร์", "ชุมแสง", "ป่ายุบใน", "พลงตาเอี่ยม"],
+        "บ้านค่าย": ["บ้านค่าย",
+    "หนองละลอก",
+    "หนองตะพาน",
+    "ตาขัน",
+    "บางบุตร",
+    "หนองบัว",
+    "ชากบก"
+],"สัตหีบ": ["สัตหีบ", "นาจอมเทียน", "พลูตาหลวง", "บางเสร่", "แสมสาร"],
+        "ปลวกแดง": ["ปลวกแดง", "ตาสิทธิ์", "ละหาร", "แม่น้ำคู้", "มาบยางพร", "หนองไร่"],
+        "เขาชะเมา": ["น้ำเป็น", "ห้วยทับมอญ", "ชำฆ้อ", "เขาน้อย"],
+        "นิคมพัฒนา": ["นิคมพัฒนา", "มาบข่า", "พนานิคม", "มะขามคู่"]
+    };
+
+
+    document.getElementById('district').addEventListener('change', function () {
+        const district = this.value;
+        const subdistrictDropdown = document.getElementById('subdistrict');
+        subdistrictDropdown.innerHTML = '<option value="">-- กรุณาเลือกตำบล --</option>';
+
+        if (district && subdistrictsByDistrict[district]) {
+            subdistrictsByDistrict[district].forEach(subdistrict => {
+                const option = document.createElement('option');
+                option.value = subdistrict;
+                option.textContent = subdistrict;
+                subdistrictDropdown.appendChild(option);
+            });
+        }
+    });
+
+    document.getElementById('fetchShops').addEventListener('click', function () {
+        const district = document.getElementById('district').value;
+        const subdistrict = document.getElementById('subdistrict').value;
+        const shopsDropdown = document.getElementById('shop_id');
+
+        shopsDropdown.innerHTML = '<option value="">-- กรุณาเลือกร้านค้า --</option>';
+
+        if (district && subdistrict) {
+            fetch(`/api/shops-by-district?district=${district}&subdistrict=${subdistrict}`)
+            .then(response => response.json())
+                .then(data => {
+                    data.forEach(shop => {
+                        const option = document.createElement('option');
+                        option.value = shop.id;
+                        option.textContent = shop.name;
+                        shopsDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            alert("กรุณาเลือกอำเภอและตำบลก่อน");
+        }
+    });
+        </script>
+
+
         <div class="form-group">
             <label for="shop_id">ร้านค้า</label>
             <select class="form-control" id="shop_id" name="shop_id" required>
@@ -40,30 +142,7 @@
             </select>
         </div>
         <!-- เพิ่ม JavaScript สำหรับการอัปเดตร้านค้า -->
-        <script>
-        document.getElementById('district').addEventListener('change', function () {
-    const district = this.value;
-    const shopDropdown = document.getElementById('shop_id');
 
-    // ล้างรายการเดิม
-    shopDropdown.innerHTML = '<option value="">-- กรุณาเลือกร้านค้า --</option>';
-
-    if (district) {
-        fetch(`/api/shops-by-district?district=${district}`)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(shop => {
-                    const option = document.createElement('option');
-                    option.value = shop.shop_id;
-                    option.textContent = shop.name;
-                    shopDropdown.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error:', error));
-    }
-});
-
-        </script>
 
         <div class="form-group">
             <label for="visit_date">วันในสัปดาห์</label>

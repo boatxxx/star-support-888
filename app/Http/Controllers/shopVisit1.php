@@ -22,14 +22,25 @@ class shopVisit1 extends Controller
 
     // เพิ่มฟังก์ชันสำหรับดึงร้านค้าตามอำเภอ
     public function getShopsByDistrict(Request $request)
-    {
-        $district = $request->input('district');
+{
+    $district = $request->input('district'); // อำเภอ เช่น "บ้านค่าย"
+    $subdistrict = $request->input('subdistrict'); // ตำบล เช่น "หนองละลอก"
 
-        // ดึงข้อมูลร้านค้าที่อำเภอตรงกับคำค้น
-        $shops = Shop::where('district', 'LIKE', "{$district} -%")->get();
+    // ตรวจสอบว่ามีค่าอำเภอและตำบลหรือไม่
+    if (!$district || !$subdistrict) {
+        return response()->json(['error' => 'กรุณาเลือกอำเภอและตำบล'], 400);
+    }
 
-        return response()->json($shops);
+    // ใช้ LIKE เพื่อค้นหาอำเภอและตำบลที่ถูกต้อง
+    $shops = Shop::where('district', 'LIKE', "{$district} - {$subdistrict}")
+                 ->get();
+
+    return response()->json($shops);
+}
+
+
+
     }
 
 
-}
+
