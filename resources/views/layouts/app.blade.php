@@ -214,7 +214,7 @@
                 <div class="collapse" id="maps">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="{{ route('work_histories.map') }}">
+                      <a href="{{ route('employee-visit.index') }}">
                         <span class="sub-item">ประวัติการเดินทาง</span>
                       </a>
                     </li>

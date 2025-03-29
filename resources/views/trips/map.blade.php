@@ -19,13 +19,14 @@
     <div class="container">
         <h2 class="text-center mb-4">ประวัติการทำงานของพนักงาน</h2>
 
+        <!-- ฟอร์มเลือกพนักงานและวันที่ -->
         <form id="salesRepForm">
             <div class="form-group">
                 <label for="sales_rep_select">เลือกพนักงาน</label>
                 <select id="sales_rep_select" name="sales_rep_id" class="form-control mb-3">
                     <option value="">เลือกพนักงาน</option>
                     @foreach ($salesReps as $rep)
-                        <option value="{{ $rep->id }}" {{ $selectedSalesRepId == $rep->id ? 'selected' : '' }}>
+                        <option value="{{ $rep->user_id }}" {{ $selectedSalesRepId == $rep->user_id ? 'selected' : '' }}>
                             {{ $rep->name }}
                         </option>
                     @endforeach
@@ -37,10 +38,10 @@
                 <input type="date" id="date" name="date" class="form-control mb-3" value="{{ $selectedDate }}">
             </div>
             <button type="button" class="btn btn-secondary" id="resetButton">รีเซ็ต</button>
-
             <button type="submit" class="btn btn-primary">ดูประวัติ</button>
         </form>
 
+        <!-- ตารางแสดงประวัติการทำงาน -->
         <table class="table table-striped mt-4">
             <thead>
                 <tr>
@@ -68,48 +69,49 @@
             </tbody>
         </table>
 
+        <!-- แผนที่แสดงตำแหน่ง -->
         <div id="map"></div>
     </div>
 
-
     <script>
-    document.getElementById('resetButton').addEventListener('click', function() {
-        location.reload(); // รีเฟรชหน้าเว็บ
-    });
-        // สร้างแผนที่
         var map = L.map('map').setView([13.7563, 100.5018], 10); // ตั้งค่าตำแหน่งเริ่มต้นที่กรุงเทพฯ
-
-        // ใช้ OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-        // ฟังก์ชันเพื่อเพิ่ม Marker บนแผนที่
+        var markers = []; // เก็บ Marker เพื่อลบทีหลัง
+
+        // ฟังก์ชันเพิ่ม markers ลงในแผนที่
         function addMarkers(workHistories) {
+            clearMarkers(); // เคลียร์ Marker เก่า
             workHistories.forEach(function(history) {
-                L.marker([history.latitude_date, history.longitude_date])
-                    .addTo(map)
-                    .bindPopup('พนักงาน ID: ' + history.sales_rep_id + '<br>เวลา: ' + history.created_at);
+                if (history.latitude_date && history.longitude_date) {
+                    var marker = L.marker([history.latitude_date, history.longitude_date])
+                        .addTo(map)
+                        .bindPopup('พนักงาน ID: ' + history.sales_rep_id + '<br>เวลา: ' + history.created_at);
+                    markers.push(marker);
+                }
             });
         }
 
-        // เมื่อโหลดหน้า ให้เพิ่ม Marker ถ้ามีประวัติการทำงาน
-        @if (!$workHistories->isEmpty())
-            addMarkers(@json($workHistories));
-            // เซ็ตแผนที่ไปยังตำแหน่งสุดท้ายที่บันทึก
-            var lastHistory = @json($workHistories->last());
-            map.setView([lastHistory.latitude_date, lastHistory.longitude_date], 13);
-        @endif
+        // ฟังก์ชันลบ markers เก่าออกจากแผนที่
+        function clearMarkers() {
+            markers.forEach(function(marker) {
+                map.removeLayer(marker);
+            });
+            markers = [];
+        }
 
-        // เมื่อส่งฟอร์ม
+        // ฟังก์ชันเมื่อกรอกฟอร์มและคลิกดูประวัติ
         $('#salesRepForm').submit(function(e) {
             e.preventDefault();
             var salesRepId = $('#sales_rep_select').val();
             var date = $('#date').val();
+
             $.ajax({
-                url: '{{ route('work_histories.map') }}',
+                url: '{{ route('trips.showMap') }}',
                 method: 'GET',
                 data: { sales_rep_id: salesRepId, date: date },
                 success: function(response) {
-                    $('#work-history-body').empty(); // ล้างข้อมูลเดิม
+                    $('#work-history-body').empty();
                     if (response.workHistories.length > 0) {
                         response.workHistories.forEach(function(history) {
                             $('#work-history-body').append('<tr>' +
@@ -118,21 +120,36 @@
                                 '<td>' + history.longitude_date + '</td>' +
                                 '<td>' + history.created_at + '</td>' +
                                 '</tr>');
-                            // เพิ่ม Marker บนแผนที่
-                            L.marker([history.latitude_date, history.longitude_date])
-                                .addTo(map)
-                                .bindPopup('พนักงาน ID: ' + history.sales_rep_id + '<br>เวลา: ' + history.created_at);
                         });
-                        // เซ็ตแผนที่ไปยังตำแหน่งสุดท้ายที่บันทึก
+                        // เพิ่ม Marker เฉพาะข้อมูลที่กรองแล้ว
+                        addMarkers(response.workHistories);
                         var lastHistory = response.workHistories[response.workHistories.length - 1];
-                        map.setView([lastHistory.latitude_date, lastHistory.longitude_date], 13);
+                        if (lastHistory.latitude_date && lastHistory.longitude_date) {
+                            map.setView([lastHistory.latitude_date, lastHistory.longitude_date], 13);
+                        }
                     } else {
                         $('#work-history-body').append('<tr><td colspan="4" class="text-center">ไม่พบข้อมูลสำหรับพนักงานที่เลือก</td></tr>');
-                        map.setView([13.7563, 100.5018], 10); // กลับไปยังตำแหน่งเริ่มต้น
+                        map.setView([13.7563, 100.5018], 10);
+                        clearMarkers();
                     }
                 }
             });
         });
+
+        // ฟังก์ชันเมื่อเริ่มโหลดแผนที่และมีข้อมูลประวัติการทำงาน
+        @if (!$workHistories->isEmpty())
+            addMarkers(@json($workHistories));
+            var lastHistory = @json($workHistories->last());
+            if (lastHistory.latitude_date && lastHistory.longitude_date) {
+                map.setView([lastHistory.latitude_date, lastHistory.longitude_date], 13);
+            }
+        @endif
+
+        // ฟังก์ชันรีเซ็ตฟอร์ม
+        document.getElementById('resetButton').addEventListener('click', function() {
+            location.reload();
+        });
     </script>
+
 </body>
 @endsection

@@ -35,32 +35,29 @@ class TripsController extends Controller
     public function showMap(Request $request)
     {
         $user = Auth::user();
-        // ดึงข้อมูลประวัติการทำงานทั้งหมด
-        $workHistories = Trip::with('salesRep');
-
-        // ดึง ID ของพนักงานที่เลือก (ถ้ามี)
         $selectedSalesRepId = $request->input('sales_rep_id');
-        // ดึงวันที่ที่เลือก (ถ้ามี)
         $selectedDate = $request->input('date');
 
-        // หากมีการเลือกพนักงาน ให้ดึงข้อมูลประวัติการทำงานของพนักงานที่เลือก
-        if ($selectedSalesRepId) {
-            $workHistories = $workHistories->where('sales_rep_id', $selectedSalesRepId);
-        }
+        // สร้าง Query และกรองข้อมูลตามตัวเลือก
+        $workHistories = Trip::when($selectedSalesRepId, function ($query, $id) {
+                return $query->where('sales_rep_id', $id);
+            })
+            ->when($selectedDate, function ($query, $date) {
+                return $query->whereDate('created_at', $date);
+            })
+            ->get();
 
-        // หากมีการเลือกวันที่ ให้ดึงข้อมูลในวันที่นั้น
-        if ($selectedDate) {
-            $workHistories = $workHistories->whereDate('created_at', $selectedDate);
-        }
+        // ดึงเฉพาะพนักงานที่มีประวัติการเดินทาง
+        $salesReps = User::whereIn('user_id', Trip::distinct()->pluck('sales_rep_id'))->get();
 
-        // สุดท้าย ดึงข้อมูลที่ต้องการ
-        $workHistories = $workHistories->get();
-
-        // ดึงรายการพนักงานทั้งหมดสำหรับการเลือก
-        $salesReps = User::all();
-
-        return view('trips.map', compact('workHistories', 'user', 'selectedSalesRepId', 'selectedDate', 'salesReps'));
+        return response()->json([
+            'workHistories' => $workHistories,
+            'salesReps' => $salesReps
+        ]);
     }
+
+
+
 
 
 }

@@ -35,10 +35,18 @@ use App\Http\Controllers\NotificationController;
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
+Route::get('/work-histories/map', [TripsController::class, 'showMap'])->name('work_histories.map');
+use App\Http\Controllers\EmployeeVisitController;
+Route::get('/api/shops', [ShopController::class, 'getShopsByDistrict']);
+Route::post('shop-search', [ShopController::class, 'showShops'])->name('shop.search');
+
+Route::get('/shop-map', [ShopController::class, 'shopMap2'])->name('shopMap2');
+Route::get('/employee-visit', [EmployeeVisitController::class, 'index'])->name('employee-visit.index');
+Route::get('/employee-visit/show', [EmployeeVisitController::class, 'show'])->name('employee-visit.show');
 
 Route::delete('/inventory-loads/{id}', [InventoryLoadController::class, 'destroy'])->name('inventory-loads.destroy');
 Route::post('/update-position', [TripsController::class, 'updatePosition'])->name('trips.updatePosition');
-Route::get('/map', [TripsController::class, 'showMap'])->name('work_histories.map');
+Route::get('/map', [TripsController::class, 'showMap'])->name('trips.showMap');
 Route::get('/payment-checks', [PaymentCheckController::class, 'index'])->name('payment_checks.index');
 
 Route::get('/product-loading', [ProductLoadingController::class, 'index'])->name('product_loading.index');
