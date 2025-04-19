@@ -1,0 +1,58 @@
+/* สไตล์พื้นฐานของเว็บไซต์ */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* ส่วนหัว (Header) */
+.head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo-container {
+    margin-bottom: 20px;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* เมนูนำทาง */
+.navigation-bar {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.top-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.top-menu .menu-item {
+    margin: 0 15px;
+}
+
+.top-menu .menu-item a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.top-menu .menu-item.current-menu-item a {
+    color: #007bff;
+}
+
+/* ปุ่มเมนูมือถือ */
+#header-tools {
+    display:
