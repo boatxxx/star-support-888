@@ -182,9 +182,9 @@ class ShopController extends Controller
         $isSent = Notification::sendLineNotification($message);
 
         if ($isSent) {
-            session()->flash('success', 'ร้านค้าถูกบันทึกเรียบร้อยแล้ว และแจ้งเตือนไปยัง LINE สำเร็จ');
+            session()->flash('success', 'ร้านค้าถูกบันทึกเรียบร้อยแล้ว ');
         } else {
-            session()->flash('error', 'ร้านค้าถูกบันทึกเรียบร้อยแล้ว แต่การแจ้งเตือน LINE ล้มเหลว');
+            session()->flash('error', 'ร้านค้าถูกบันทึกเรียบร้อยแล้ว');
         }
 
         return redirect()->route('shops.create');

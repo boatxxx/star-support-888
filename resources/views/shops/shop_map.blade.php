@@ -24,6 +24,36 @@
         </div>
 
         <button id="showData" class="btn btn-primary mt-2" type="submit" disabled>ค้นหาร้านค้า</button>
+        @if(isset($shops) && $shops->count() > 0)
+    @php
+        $waypoints = [];
+        foreach ($shops as $shop) {
+            if ($shop->latitude && $shop->longitude) {
+                $waypoints[] = $shop->latitude . ',' . $shop->longitude;
+            }
+        }
+
+        // เริ่มต้นที่จุดแรก → ปลายทางจุดสุดท้าย
+        $origin = $waypoints[0] ?? '';
+        $destination = $waypoints[count($waypoints) - 1] ?? '';
+        $middlePoints = array_slice($waypoints, 1, count($waypoints) - 2);
+        $waypointParam = implode('|', $middlePoints);
+
+        $multiRouteUrl = 'https://www.google.com/maps/dir/?api=1'
+                        . '&origin=' . urlencode($origin)
+                        . '&destination=' . urlencode($destination)
+                        . '&waypoints=' . urlencode($waypointParam);
+    @endphp
+
+    @if(count($waypoints) >= 2)
+        <a href="{{ $multiRouteUrl }}" target="_blank" class="btn btn-danger mt-3 mb-3">
+            🗺️ นำทางไปร้านค้าทั้งหมด ({{ count($waypoints) }} จุด)
+        </a>
+    @else
+        <div class="alert alert-warning mt-3">ต้องมีร้านอย่างน้อย 2 ร้านที่มีพิกัดเพื่อวางแผนเส้นทาง</div>
+    @endif
+@endif
+
     </form>
     <div id="map" style="height: 500px;"></div> <!-- แผนที่ที่จะแสดง -->
 
@@ -47,7 +77,7 @@
 
 <script>
     var subdistricts = @json($subdistricts);
-    var shops = @json($shops);
+    var shops = @json($shops ?? []);
 
     document.getElementById('district').addEventListener('change', function() {
         var district = this.value;
